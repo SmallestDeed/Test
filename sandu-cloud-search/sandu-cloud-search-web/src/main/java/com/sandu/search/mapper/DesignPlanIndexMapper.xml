@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.DesignPlanIndexDao">
+
+    <!-- 获取产品信息 -->
+    <select id="queryRecommendationPlanList" resultType="com.sandu.search.entity.designplan.po.RecommendationPlanPo">
+        SELECT
+          id                                                                  AS id,
+          recommended_type                                                    AS type,
+          plan_id                                                             AS designPlanId,
+          plan_name                                                           AS name,
+          user_id                                                             AS createUserId,
+          living_id                                                           AS livingId,
+          house_id                                                            AS houseId,
+          remark                                                              AS remark,
+          is_default_decorate                                                 AS isSupportOneKeyDecorate,
+          cover_pic_id                                                        AS coverPicId,
+          design_template_id                                                  AS designTemplateId,
+          design_recommended_style_id                                         AS designStyleId,
+          gmt_create                                                          AS createTime,
+          gmt_modified                                                        AS modifyTime,
+          release_time                                                        AS publishTime,
+          is_release                                                          AS releaseStatus,
+          plan_source                                                         AS planSource,
+          is_deleted                                                          AS dataIsDeleted
+        FROM
+            design_plan_recommended
+    </select>
+
+    <!-- 获取产品信息列表 -->
+    <select id="queryRecommendationPlanListByRecommendationPlanIdList" parameterType="int" resultType="com.sandu.search.entity.designplan.po.RecommendationPlanPo">
+        SELECT
+            id                                                                  AS id,
+            recommended_type                                                    AS type,
+            plan_id                                                             AS designPlanId,
+            plan_name                                                           AS name,
+            user_id                                                             AS createUserId,
+            living_id                                                           AS livingId,
+            house_id                                                            AS houseId,
+            remark                                                              AS remark,
+            is_default_decorate                                                 AS isSupportOneKeyDecorate,
+            cover_pic_id                                                        AS coverPicId,
+            design_template_id                                                  AS designTemplateId,
+            design_recommended_style_id                                         AS designStyleId,
+            gmt_create                                                          AS createTime,
+            gmt_modified                                                        AS modifyTime,
+            release_time                                                        AS publishTime,
+            is_release                                                          AS releaseStatus,
+            plan_source                                                         AS planSource,
+            is_deleted                                                          AS dataIsDeleted,
+            charge_type                                                         AS chargeType,
+            plan_price                                                          AS planPrice
+        FROM
+          design_plan_recommended
+        WHERE
+          id IN
+        <foreach collection="recommendationPlanIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 获取收藏推荐方案列表 -->
+    <select id="queryCollectRecommendedPlanList" resultType="java.lang.Integer" parameterType="com.sandu.search.entity.designplan.vo.CollectRecommendedVo">
+        SELECT
+            DISTINCT
+            c.id AS planRecommendedId
+        FROM
+          design_plan_recommend_favorite_ref a
+        LEFT JOIN sys_business_favorite b ON b.bid = a.fid
+        LEFT JOIN design_plan_recommended c ON c.id = a.recommendId
+        LEFT JOIN space_common d ON d.id = c.space_common_id
+        WHERE
+          b.userId = #{userId}
+          AND a.status = 1
+          AND a.design_plan_type = 0
+            <!--<if test=" null != companyId and 0 != companyId and companyId != 2501">
+                and c.company_id = #{companyId}
+            </if>-->
+            <if test="companyIdList != null and companyIdList.size() > 0">
+                and c.company_id IN
+                <foreach item="item" collection="companyIdList" separator="," open="(" close=")" index="">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="searchKeyword != null and searchKeyword != ''">
+                AND c.plan_name like CONCAT(CONCAT('%',#{searchKeyword, jdbcType=VARCHAR}),'%')
+            </if>
+            <if test="houseType != null and houseType != 0">
+                AND d.space_function_id = #{houseType}
+            </if>
+           <if test="designStyleId != null and designStyleId != 0">
+                AND c.design_recommended_style_id = #{designStyleId}
+            </if>
+            AND c.is_deleted = 0
+        order by a.utime DESC
+    </select>
+
+    <!-- 获取收藏全屋方案列表 -->
+    <select id="queryCollectFullHousePlanList" resultType="java.lang.Integer" parameterType="com.sandu.search.entity.designplan.vo.RecommendationPlanSearchVo">
+        SELECT
+            DISTINCT
+            c.id
+        FROM
+          design_plan_recommend_favorite_ref a
+        LEFT JOIN sys_business_favorite b ON b.bid = a.fid
+        LEFT JOIN full_house_design_plan c ON c.id = a.full_house_design_plan_id
+        WHERE
+            b.userId = #{userId}
+            AND a.status = 1
+            AND a.design_plan_type = 1
+            <if test="searchKeyword != null and searchKeyword != ''">
+                AND c.plan_name like CONCAT(CONCAT('%',#{searchKeyword, jdbcType=VARCHAR}),'%')
+            </if>
+            <if test="designStyleId != null and designStyleId != 0">
+                AND c.plan_style_id = #{designStyleId}
+            </if>
+            AND c.is_deleted = 0
+        order by a.utime DESC
+    </select>
+
+    <select id="getFavoriteCount" parameterType="com.sandu.search.entity.designplan.vo.CollectRecommendedVo" resultType="java.lang.Integer">
+        SELECT
+          count(1)
+        FROM
+        (SELECT
+        dprfr.recommendId,
+        dprfr.full_house_design_plan_id
+        FROM
+        design_plan_recommend_favorite_ref AS dprfr
+        LEFT JOIN sys_business_favorite AS sbf ON ( dprfr.fid = sbf.bid )
+        WHERE
+        sbf.userId = #{userId}
+        AND dprfr.STATUS = 1
+        ) AS t1
+        LEFT JOIN ( SELECT * FROM design_plan_recommended WHERE is_deleted = 0 AND is_release = 1
+        <if test="null != companyId and 0 != companyId and companyId != 2501">
+            and company_id = #{companyId}
+        </if>
+        ) AS t2 ON ( t1.recommendId = t2.id )
+        LEFT JOIN design_plan_2c_platform t3 on t3.plan_id = t2.id and t3.platform_id = #{platformId} and t3.design_plan_type != 3
+        LEFT JOIN full_house_design_plan t4 on t4.is_deleted = 0 and t4.id = t1.full_house_design_plan_id
+        <if test="companyId != 2501">
+            and t4.company_id = #{companyId}
+        </if>
+        LEFT JOIN design_plan_2c_platform t5 on t5.plan_id = t4.id and t5.platform_id = #{platformId} and t5.design_plan_type = 3
+        WHERE
+        1 = 1
+        <!--and (t3.putaway_state = 1 or t5.putaway_state = 1)-->
+        and (t3.allot_state = 1 or t5.allot_state = 1)
+    </select>
+
+
+    <select id="selectAllSuperiorPlanIds" resultType="java.lang.String">
+       SELECT
+            design_plan_recommended_id + '' AS ids
+        FROM
+            design_plan_recommended_superior
+        WHERE
+            is_deleted = 0
+        AND space_type != 13
+        UNION ALL
+            SELECT
+                uuid AS ids
+            FROM
+                full_house_design_plan
+            WHERE
+                is_deleted = 0
+            AND id IN (
+                SELECT
+                    design_plan_recommended_id
+                FROM
+                    design_plan_recommended_superior
+                WHERE
+                    is_deleted = 0
+                AND space_type = 13
+            )
+
+
+    </select>
+
+
+    <select id="getTopDesignPlanRecommendPOList" resultType="com.sandu.search.entity.designplan.po.TopDesignPlanRecommendPO">
+        SELECT
+            id as id,
+            ordering as ordering,
+            space_type as spaceType
+        from  design_plan_recommended_superior
+            where is_deleted = 0;
+    </select>
+
+</mapper>

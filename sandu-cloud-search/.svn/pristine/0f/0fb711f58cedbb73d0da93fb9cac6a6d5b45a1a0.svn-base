@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.DesignRulesMapper">
+	<!-- **常量定义** -->
+	<sql id="All_Column_List">
+		id,rules_type,rules_business,rules_sign,rules_level,rules_main_obj,rules_main_value,rules_secondary_objs,rules_secondary_values,rules_priority,rules_ordering,ext1,ext2,ext3,ext4,ext5,ext6,sys_code,creator,gmt_create,modifier,gmt_modified,is_deleted,att1,att2,numa1,numa2,remark
+	</sql>
+	
+	<!-- **结果定义** -->
+	<resultMap id="AllResultMap" type="com.sandu.search.entity.product.dto.DesignRules">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result  column="rules_type" property="rulesType" jdbcType="VARCHAR" />
+		<result  column="rules_business" property="rulesBusiness" jdbcType="VARCHAR" />
+		<result  column="rules_sign" property="rulesSign" jdbcType="VARCHAR" />
+		<result  column="rules_level" property="rulesLevel" jdbcType="VARCHAR" />
+		<result  column="rules_main_obj" property="rulesMainObj" jdbcType="VARCHAR" />
+		<result  column="rules_main_value" property="rulesMainValue" jdbcType="VARCHAR" />
+		<result  column="rules_secondary_objs" property="rulesSecondaryObjs" jdbcType="VARCHAR" />
+		<result  column="rules_secondary_values" property="rulesSecondaryValues" jdbcType="VARCHAR" />
+		<result  column="rules_priority" property="rulesPriority" jdbcType="VARCHAR" />
+		<result  column="rules_ordering" property="rulesOrdering" jdbcType="VARCHAR" />
+		<result  column="ext1" property="ext1" jdbcType="VARCHAR" />
+		<result  column="ext2" property="ext2" jdbcType="VARCHAR" />
+		<result  column="ext3" property="ext3" jdbcType="VARCHAR" />
+		<result  column="ext4" property="ext4" jdbcType="VARCHAR" />
+		<result  column="ext5" property="ext5" jdbcType="VARCHAR" />
+		<result  column="ext6" property="ext6" jdbcType="VARCHAR" />
+		<result  column="sys_code" property="sysCode" jdbcType="VARCHAR" />
+		<result  column="creator" property="creator" jdbcType="VARCHAR" />
+		<result  column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+		<result  column="modifier" property="modifier" jdbcType="VARCHAR" />
+		<result  column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+		<result  column="is_deleted" property="isDeleted" jdbcType="INTEGER" />
+		<result  column="att1" property="att1" jdbcType="VARCHAR" />
+		<result  column="att2" property="att2" jdbcType="VARCHAR" />
+		<result  column="numa1" property="numa1" jdbcType="INTEGER" />
+		<result  column="numa2" property="numa2" jdbcType="INTEGER" />
+		<result  column="remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 查询所有，可排序 -->
+    <select id="selectList" resultMap="AllResultMap"
+		parameterType="com.sandu.search.entity.product.dto.DesignRules">
+		select
+		<include refid="All_Column_List" />
+		from design_rules
+        where 1=1
+		<if test="rulesType!= null">  and rules_type = #{rulesType,jdbcType=VARCHAR} </if>
+		<if test="rulesBusiness!= null">  and CONCAT(',',rules_business,',') LIKE CONCAT(CONCAT('%,',#{rulesBusiness,jdbcType=VARCHAR}),',%')</if>
+		<if test="rulesSign!= null">  and rules_sign = #{rulesSign,jdbcType=VARCHAR} </if>
+		<if test="rulesLevel!= null">  and rules_level = #{rulesLevel,jdbcType=VARCHAR} </if>
+		<if test="rulesMainObj!= null">  and rules_main_obj = #{rulesMainObj,jdbcType=VARCHAR} </if>
+		<if test="rulesMainValue!= null">  and CONCAT(',',rules_main_value,',') LIKE CONCAT(CONCAT('%,',#{rulesMainValue,jdbcType=VARCHAR}),',%') </if>
+		<if test="rulesSecondaryObjs!= null">  and rules_secondary_objs = #{rulesSecondaryObjs,jdbcType=VARCHAR} </if>
+		<if test="rulesSecondaryValues!= null">  and rules_secondary_values = #{rulesSecondaryValues,jdbcType=VARCHAR} </if>
+		<if test="rulesPriority!= null">  and rules_priority = #{rulesPriority,jdbcType=VARCHAR} </if>
+		<if test="rulesOrdering!= null">  and rules_ordering = #{rulesOrdering,jdbcType=VARCHAR} </if>
+		<if test="ext1!= null">  and ext1 = #{ext1,jdbcType=VARCHAR} </if>
+		<if test="ext2!= null">  and ext2 = #{ext2,jdbcType=VARCHAR} </if>
+		<if test="ext3!= null">  and ext3 = #{ext3,jdbcType=VARCHAR} </if>
+		<if test="ext4!= null">  and ext4 = #{ext4,jdbcType=VARCHAR} </if>
+		<if test="ext5!= null">  and ext5 = #{ext5,jdbcType=VARCHAR} </if>
+		<if test="ext6!= null">  and ext6 = #{ext6,jdbcType=VARCHAR} </if>
+		<if test="sysCode!= null">  and sys_code = #{sysCode,jdbcType=VARCHAR} </if>
+		<if test="creator!= null">  and creator = #{creator,jdbcType=VARCHAR} </if>
+		<if test="gmtCreate!= null">  and gmt_create = #{gmtCreate,jdbcType=TIMESTAMP} </if>
+		<if test="modifier!= null">  and modifier = #{modifier,jdbcType=VARCHAR} </if>
+		<if test="gmtModified!= null">  and gmt_modified = #{gmtModified,jdbcType=TIMESTAMP} </if>
+		<if test="isDeleted!= null">  and is_deleted = #{isDeleted,jdbcType=INTEGER} </if>
+		<if test="att1!= null">  and att1 = #{att1,jdbcType=VARCHAR} </if>
+		<if test="att2!= null">  and att2 = #{att2,jdbcType=VARCHAR} </if>
+		<if test="numa1!= null">  and numa1 = #{numa1,jdbcType=INTEGER} </if>
+		<if test="numa2!= null">  and numa2 = #{numa2,jdbcType=INTEGER} </if>
+		<if test="remark!= null">  and remark = #{remark,jdbcType=VARCHAR} </if>
+	</select>
+
+	<select id="queryGroupProductDesignRulesMetaData" resultType="com.sandu.search.entity.product.dto.DesignRules">
+		SELECT
+			rules_sign				AS rulesSign,
+			rules_secondary_values	AS rulesSecondaryValues,
+			rules_main_value		AS rulesMainValue
+		FROM
+			design_rules
+		WHERE
+			is_deleted = 0
+		<!--这里根据组合替换搜索的逻辑得出只需添加commonRulesType-->
+		AND	rules_type = 'commonRulesType'
+	</select>
+</mapper>

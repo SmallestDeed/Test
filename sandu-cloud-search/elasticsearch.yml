@@ -1,0 +1,3 @@
+#增加bool查询的查询条件个数
+#vim /etc/elasticsearch/elasticsearch.yml
+indices.query.bool.max_clause_count: 10240

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.ProductIndexDao">
+
+    <!-- 获取产品信息 -->
+    <select id="queryProductPoList" parameterType="int" resultType="com.sandu.search.entity.elasticsearch.po.ProductPo">
+        SELECT
+          bp.id                                                                  AS id,
+          bp.product_code                                                        AS productCode,
+          bp.product_name                                                        AS productName,
+          bp.brand_id                                                            AS productBrandId,
+          bp.pro_style_id                                                        AS productStyleId,
+          bp.product_style_id_info                                               AS productStyleIdArr,
+          bp.product_spec                                                        AS productSpecification,
+          bp.color_id                                                            AS productColorId,
+          CONVERT(IF(ISNULL(bp.product_length),0,bp.product_length),SIGNED)         AS productLength,
+          CONVERT(IF(ISNULL(bp.product_width),0,bp.product_width),SIGNED)           AS productWidth,
+          CONVERT(IF(ISNULL(bp.product_height),0,bp.product_height),SIGNED)         AS productHeight,
+          bp.sale_price                                                          AS productSalePrice,
+          bp.sale_price_value                                                    AS productSalePriceValue,
+          bp.pic_id                                                              AS productPicId,
+          bp.windows_u3dmodel_id                                                            AS productModelId,
+          bp.product_desc                                                        AS productDesc,
+          bp.sys_code                                                            AS productSystemCode,
+          bp.gmt_create                                                          AS productCreateDate,
+          bp.gmt_modified                                                        AS productModifyDate,
+          ppr.gmt_create                                                    AS productPutawayDate,
+          bp.is_deleted                                                          AS isDelete,
+          bp.pic_ids                                                             AS productPicArr,
+          bp.material_pic_ids                                                    AS productMaterialId,
+          bp.split_textures_info                                                 AS productMaterialIdArr,
+          bp.product_type_value                                                  AS productTypeValue,
+          bp.product_small_type_value                                            AS productTypeSmallValue,
+          bp.putaway_state                                                       AS productPutawayState,
+          bp.designer_id                                                         AS productDesignerId,
+          bp.series_id                                                           AS productSeriesId,
+          bp.product_model_number                                                AS productModelNumber,
+          bp.measure_code                                                        AS productMeasurementCode,
+          bp.product_smallpox_identify_str                                       AS productCeilingLayoutIden,
+          bp.product_ground_identify                                             AS productGroundLayoutIden,
+          CONVERT(IF(ISNULL(bp.full_pave_length),0,bp.full_pave_length),SIGNED)     AS productFullPaveLength,
+          bp.secrecy_flag                                                        AS secrecyFlag,
+          bp.is_complex_parquet                                                  AS ceilingRandomPatchFlowerFlag,
+          bp.is_deleted                                                          AS dataIsDelete,
+          bp.style_id                                                              AS styleModelId,
+          bp.bm_ids                                                              AS bmIds,
+          bp.split_textures_info                                               AS splitTexturesInfo,
+          bp.product_batch_type                                            AS productBatchType,
+          rp.pic_path as productPicPath,
+          group_concat(distinct(concat(
+          			ppp.code, 
+          			"," ,
+					case when ppp.filter_order = "filter" then "filter" else "" end,
+					 "," ,
+					ppc.prop_value
+					)) SEPARATOR ";") as propInfo
+        FROM
+            base_product bp
+            
+            left join platform2b_product_rel ppr on ppr.product_id = bp.id
+            
+            left join res_pic rp on rp.id = bp.pic_id
+            
+            <!-- add by huangsongbo 2018.9.11 属性该用连表查 ->start -->
+            left join product_attribute pa on pa.product_id = bp.id
+			left join product_props ppc on ppc.id = pa.attribute_value_id
+			left join product_props ppp on ppp.id = ppc.pid
+			<!-- add by huangsongbo 2018.9.11 属性该用连表查 ->end -->
+
+        WHERE 
+        <!-- is_deleted = 0 AND  -->
+            bp.product_code NOT LIKE 'baimo_%'
+              
+        group by bp.id     
+         
+        <!-- add by huangsongbo 2018.8.6 -->
+        order by bp.id
+        
+        LIMIT
+            #{start},#{limit}
+    </select>
+
+    <!-- 获取产品信息列表 -->
+    <select id="queryProductPoListByProductIdList" parameterType="int" resultType="com.sandu.search.entity.elasticsearch.po.ProductPo">
+        SELECT
+          bp.id                                                                  AS id,
+          bp.product_code                                                        AS productCode,
+          bp.product_name                                                        AS productName,
+          bp.brand_id                                                            AS productBrandId,
+          bp.pro_style_id                                                        AS productStyleId,
+          bp.product_style_id_info                                               AS productStyleIdArr,
+          bp.product_spec                                                        AS productSpecification,
+          bp.color_id                                                            AS productColorId,
+          CONVERT(IF(ISNULL(bp.product_length),0,bp.product_length),SIGNED)         AS productLength,
+          CONVERT(IF(ISNULL(bp.product_width),0,bp.product_width),SIGNED)           AS productWidth,
+          CONVERT(IF(ISNULL(bp.product_height),0,bp.product_height),SIGNED)         AS productHeight,
+          bp.sale_price                                                          AS productSalePrice,
+          bp.sale_price_value                                                    AS productSalePriceValue,
+          bp.pic_id                                                              AS productPicId,
+          bp.windows_u3dmodel_id                                                            AS productModelId,
+          bp.product_desc                                                        AS productDesc,
+          bp.sys_code                                                            AS productSystemCode,
+          bp.gmt_create                                                          AS productCreateDate,
+          bp.gmt_modified                                                        AS productModifyDate,
+          ppr.gmt_create                                                         AS productPutawayDate,
+          bp.is_deleted                                                          AS isDelete,
+          bp.pic_ids                                                             AS productPicArr,
+          bp.material_pic_ids                                                    AS productMaterialId,
+          bp.split_textures_info                                                 AS productMaterialIdArr,
+          bp.product_type_value                                                  AS productTypeValue,
+          bp.product_small_type_value                                            AS productTypeSmallValue,
+          bp.putaway_state                                                       AS productPutawayState,
+          bp.designer_id                                                         AS productDesignerId,
+          bp.series_id                                                           AS productSeriesId,
+          bp.product_model_number                                                AS productModelNumber,
+          bp.measure_code                                                        AS productMeasurementCode,
+          bp.product_smallpox_identify_str                                       AS productCeilingLayoutIden,
+          bp.product_ground_identify                                             AS productGroundLayoutIden,
+          CONVERT(IF(ISNULL(bp.full_pave_length),0,bp.full_pave_length),SIGNED)     AS productFullPaveLength,
+          bp.secrecy_flag                                                        AS secrecyFlag,
+          bp.is_complex_parquet                                                  AS ceilingRandomPatchFlowerFlag,
+          bp.is_deleted                                                          AS dataIsDelete,
+          bp.style_id                                                              AS styleModelId,
+          bp.bm_ids                                                              AS bmIds,
+          bp.split_textures_info                                               AS splitTexturesInfo,
+          bp.product_batch_type                                            AS productBatchType,
+          rp.pic_path as productPicPath,
+          group_concat(distinct(concat(
+          			ppp.code, 
+          			"," ,
+					case when ppp.filter_order = "filter" then "filter" else "" end,
+					 "," ,
+					ppc.prop_value
+					)) SEPARATOR ";") as propInfo
+        FROM
+          base_product bp
+          
+          left join platform2b_product_rel ppr on ppr.product_id = bp.id
+          
+          left join res_pic rp on rp.id = bp.pic_id
+          left join product_attribute pa on pa.product_id = bp.id
+		  left join product_props ppc on ppc.id = pa.attribute_value_id
+		  left join product_props ppp on ppp.id = ppc.pid
+          
+        WHERE
+          bp.id
+        IN
+        <foreach collection="productIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+        AND bp.product_code NOT LIKE 'baimo_%'
+        
+        group by bp.id
+    </select>
+
+    <!-- 查询产品分类关联信息-->
+    <select id="queryGroupProductList" resultType="com.sandu.search.entity.elasticsearch.po.GroupProductPO">
+        select
+        g.id,
+        g.group_code as groupCode,
+        g.group_name as groupName,
+        g.type as houseType,
+        g.state as state,
+        g.code as groupCode2,
+        g.creator AS creator,
+        g.gmt_create gmtCreate,
+        g.modifier,
+        g.gmt_modified as gmtModified,
+        g.location,
+        g.group_price as price,
+        g.group_flag as flag,
+        g.group_width as width,
+        g.group_length as length,
+        g.group_high as high,
+        g.space_function_value AS groupSpaceTypeV,
+        g.space_area_value AS groupSpaceAreaV,
+        g.brand_id AS brandId,
+        g.product_type AS productModel,
+        g.product_style_id_info as styleIds,
+        g.group_type as groupType,
+        g.composite_type compositeType,
+        stt.s1name as groupSpaceTypeName,
+        stt.s2name as spaceAreaStr,
+        s3.name as groupTypeName,
+        s4.name as houseTypeName,
+        bb.brand_name as brandName,
+        rf.file_path as filePath,
+        rp.pic_path as picPath
+        from group_product g
+        LEFT JOIN sys_dictionary s3 on g.composite_type=s3.value and s3.type='restaurantAlbuginea'
+        LEFT JOIN sys_dictionary s4 on g.type=s3.value and s4.type='houseType'
+        LEFT JOIN base_brand bb on g.brand_id = bb.id
+        left join res_file rf on rf.id=g.location
+        left join res_pic rp on g.pic_id=rp.id
+		LEFT JOIN  (select s1.value as gtv,s1.name as s1name,s2.name as s2name,s2.value as areav from sys_dictionary s1  LEFT JOIN sys_dictionary s2 on s1.valuekey = s2.type where s1.type='groupSpaceType') stt
+							ON g.space_function_value = stt.gtv and g.space_area_value = stt.areav
+        where g.is_deleted=0 and g.design_templet_id >0
+        LIMIT
+        #{start},#{limit}
+    </select>
+
+</mapper>

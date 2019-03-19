@@ -1,0 +1,13 @@
+spring:
+  #Rabbit Mq
+  rabbitmq:
+    host: 192.168.1.208
+    port: 5672
+    username: dev
+    password: 8b1asglk
+    publisher-confirms: true
+    #virtual-host: test
+
+#Log System
+logging:
+  config: classpath:log4j2.xml

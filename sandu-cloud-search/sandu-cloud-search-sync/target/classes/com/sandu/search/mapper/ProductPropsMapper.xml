@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.ProductPropsMapper">
+<!--<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
+
+	<!-- **常量定义** -->
+	<sql id="All_Column_List">
+		id,code,long_code,name,prop_value,pic_path,pid,type,is_leaf,level,ordering,sys_code,creator,gmt_create,modifier,gmt_modified,is_deleted,filter_order,sequence_number,long_numbers,att1,att2,numa1,numa2,remark
+	</sql>
+	
+	<!-- **结果定义** -->
+	<resultMap id="AllResultMap" type="com.sandu.search.entity.product.dto.ProductProps">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result  column="code" property="code" jdbcType="VARCHAR" />
+		<result  column="long_code" property="longCode" jdbcType="VARCHAR" />
+		<result  column="name" property="name" jdbcType="VARCHAR" />
+		<result  column="prop_value" property="propValue" jdbcType="VARCHAR" />
+		<result  column="pic_path" property="picPath" jdbcType="INTEGER" />
+		<result  column="pid" property="pid" jdbcType="INTEGER" />
+		<result  column="type" property="type" jdbcType="INTEGER" />
+		<result  column="is_leaf" property="isLeaf" jdbcType="INTEGER" />
+		<result  column="level" property="level" jdbcType="INTEGER" />
+		<result  column="ordering" property="ordering" jdbcType="INTEGER" />
+		<result  column="sys_code" property="sysCode" jdbcType="VARCHAR" />
+		<result  column="creator" property="creator" jdbcType="VARCHAR" />
+		<result  column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+		<result  column="modifier" property="modifier" jdbcType="VARCHAR" />
+		<result  column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+		<result  column="is_deleted" property="isDeleted" jdbcType="INTEGER" />
+		<result  column="filter_order" property="filterOrder" jdbcType="VARCHAR" />
+		<result  column="long_numbers" property="longNumbers" jdbcType="VARCHAR" />
+		<result  column="sequence_number" property="sequenceNumber" jdbcType="INTEGER" />
+		<result  column="att1" property="att1" jdbcType="VARCHAR" />
+		<result  column="att2" property="att2" jdbcType="VARCHAR" />
+		<result  column="numa1" property="numa1" jdbcType="INTEGER" />
+		<result  column="numa2" property="numa2" jdbcType="INTEGER" />
+		<result  column="remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- **查询定义** -->
+	<!-- 按主键查询 -->
+	<select id="selectByPrimaryKey" resultMap="AllResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="All_Column_List" />
+		from product_props
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	
+
+</mapper>

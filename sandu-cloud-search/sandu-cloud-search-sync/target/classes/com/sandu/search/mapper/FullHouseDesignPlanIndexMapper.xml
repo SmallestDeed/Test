@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.FullHouseDesignPlanIndexDao">
+
+    <select id="queryFullHouseDesignPlanList" resultType="com.sandu.search.entity.fullhouse.FullHouseDesignPlanPo">
+        select
+            id                  as id,
+            uuid                as uuid,
+            source_type         as sourceType,
+            source_plan_id      as sourcePlanId,
+            plan_name           as name,
+            plan_code           as code,
+            plan_describe       as describe,
+            user_id             as userId,
+            plan_pic_id         as planPicId,
+            plan_style_id       as planStyleId,
+            plan_style_name     as planStyleName,
+            vr_resource_uuid    as vrSourceUuid,
+            open_state          as openState,
+            open_time           as openTime,
+            gmt_create          as createTime,
+            gmt_modified        as modifyTime,
+            is_deleted          as isDeleted,
+            company_id          as companyId,
+            brand_ids           as brandIds
+        from
+            full_house_design_plan
+        where  a.source_type in (1,3,4)
+    </select>
+
+    <select id="queryFullHousePlanList" resultType="com.sandu.search.entity.designplan.po.RecommendationPlanPo">
+        SELECT
+            a.id                  as fullHouseId,
+            a.uuid                as uuid,
+            a.plan_name           as name,
+            a.plan_code           as code,
+            a.user_id             as createUserId,
+            a.plan_pic_id         as coverPicId,
+            a.plan_style_id       as designStyleId,
+            a.plan_style_name     as styleName,
+            a.vr_resource_uuid    as vrSourceUuid,
+            a.open_state          as openState,
+            a.source_type         as sourceType,
+            a.open_time           as publishTime,
+            a.gmt_create          as createTime,
+            a.gmt_modified        as modifyTime,
+            a.is_deleted          as dataIsDeleted,
+            a.company_id          as companyId,
+            a.brand_ids           as brandIds,
+            a.view_num            as visitCount,
+            b.pic_path            as coverPicPath
+        FROM
+          full_house_design_plan a
+        LEFT JOIN
+          res_render_pic b on b.id = a.plan_pic_id
+        WHERE
+          a.source_type in (1,3,4)
+        limit
+          #{start},#{limit}
+    </select>
+
+
+    <select id="queryFullHousePlanListByIds" resultType="com.sandu.search.entity.designplan.po.RecommendationPlanPo">
+        SELECT
+            a.id                  as fullHouseId,
+            a.uuid                as uuid,
+            a.plan_name           as name,
+            a.plan_code           as code,
+            a.user_id             as createUserId,
+            a.plan_pic_id         as coverPicId,
+            a.plan_style_id       as designStyleId,
+            a.plan_style_name     as styleName,
+            a.vr_resource_uuid    as vrSourceUuid,
+            a.open_state          as openState,
+            a.source_type         as sourceType,
+            a.open_time           as publishTime,
+            a.gmt_create          as createTime,
+            a.gmt_modified        as modifyTime,
+            a.is_deleted          as dataIsDeleted,
+            a.company_id          as companyId,
+            a.brand_ids           as brandIds,
+            a.view_num            as visitCount,
+            a.charge_type         AS chargeType,
+            a.plan_price          AS planPrice,
+            b.pic_path            as coverPicPath,
+            c.user_name           as createUserName,
+            d.pic_path            as userPicPath
+        FROM
+          full_house_design_plan a
+        LEFT JOIN
+          res_render_pic b on b.id = a.plan_pic_id
+        LEFT JOIN
+          sys_user c on c.id = a.user_id
+        LEFT JOIN
+          res_pic d on d.id = c.pic_id
+        WHERE
+          a.id
+        IN
+        <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and a.source_type in (1,3,4)
+    </select>
+
+</mapper>

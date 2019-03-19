@@ -1,0 +1,97 @@
+#DateSource
+datasource:
+  url: jdbc:mysql://db.mysql.sanduspace.com:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=true&verifyServerCertificate=false
+  username: dbuser
+  password: Adbuser*$@sandu
+
+#Log System
+logging:
+  config: classpath:newlog4j2.xml
+  level: info
+
+#RPC Servive
+dubbo:
+  applicationName: sandu-cloud-search-provider
+  registryAddress: zookeeper01.sanduspace.com:2181
+  transProtocolName: dubbo
+  transProtocolPort: 20666
+  providerServicesList:
+    - com.sandu.search.service.product.ProductBrandSearchService-productBrandSearchService-dubbo-3000-1.0.0
+    - com.sandu.search.service.product.ProductNameSearchService-productNameSearchService-dubbo-3000-1.0.0
+    - com.sandu.search.service.product.ProductStyleSearchService-productStyleSearchService-dubbo-3000-1.0.0
+    - com.sandu.search.service.product.ProductTextureSearchService-productTextureSearchService-dubbo-3000-1.0.0
+
+#Elasticsearch Service
+elasticsearch:
+  uri:
+    - 10.10.20.81:9200
+    - 10.10.20.82:9200
+    - 10.10.20.83:9200
+    - 10.10.20.84:9200
+  indexProductData: false
+  indexGroupProductData: false
+  initHouseIndex: false
+  indexRecommendationPlanData: false
+  reIndexProductDataIndexName: product_info_20180829
+  reIndexGoodsDataIndexName: goods_info_20180801
+  recommendedPlanDataIndexName: recommendedplan_info_20181221
+  reIndexGroupProductDataIndexName : group_product_info
+
+#Redis
+redis:
+  #格式：redis://:[密码]@[服务器地址]:[端口]/[db index]
+  #uri: redis://:sanduspace@redis.sanduspace.com:33436/0
+  uri: redis://:sanduspace@redises.sanduspace.com:33434/0
+  pool:
+    maxActive: 800
+    maxIdle: 200
+    minIdle: 100
+    maxWaitMillis: 20000
+    maxWait: 1000
+    maxTotal: 6000
+
+#Tomcat
+server:
+  port: 15000
+  session:
+    timeout: 7200
+  tomcat:
+    uri-encoding: UTF-8
+    #min-spare-threads: 50
+    #max-connections: 200
+    #max-threads: 200
+  context-path: /fullsearch-app
+  #connection-timeout: 5000
+
+#Rabbit Mq
+spring:
+  rabbitmq:
+    host: amqp.sanduspace.com
+    port: 5672
+    username: admin
+    password: 123456abc
+    publisher-confirms: true
+    #virtual-host: test
+
+#Sync task
+task:
+  product:
+    incr:
+      cron: 0 0/5 * * * ?
+      fullSyncNum: 30
+    all: #43200000
+      cron: 0 0 0 * * ?
+  recommendationplan:
+    all:
+      cron: 0 0 3 * * ?
+    incr:
+      cron: 0 0/8 * * * ?
+  goods:
+    incr:
+      cron: 0 0/5 * * * ?
+    all:
+      cron: 0 0 2 * * ?
+
+#Init meta data
+init:
+  metadatafinish: false

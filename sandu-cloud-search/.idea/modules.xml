@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/sandu-cloud-search.iml" filepath="$PROJECT_DIR$/sandu-cloud-search.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sandu-cloud-search-amqp/sandu-cloud-search-amqp.iml" filepath="$PROJECT_DIR$/sandu-cloud-search-amqp/sandu-cloud-search-amqp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sandu-cloud-search-dependencies/sandu-cloud-search-dependencies.iml" filepath="$PROJECT_DIR$/sandu-cloud-search-dependencies/sandu-cloud-search-dependencies.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sandu-cloud-search-sync/sandu-cloud-search-sync.iml" filepath="$PROJECT_DIR$/sandu-cloud-search-sync/sandu-cloud-search-sync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sandu-cloud-search-web/sandu-cloud-search-web.iml" filepath="$PROJECT_DIR$/sandu-cloud-search-web/sandu-cloud-search-web.iml" />
+    </modules>
+  </component>
+</project>

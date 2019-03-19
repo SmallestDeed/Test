@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.DesignPlanIndexDao">
+
+    <!-- 获取产品信息 -->
+    <select id="queryRecommendationPlanList" resultType="com.sandu.search.entity.designplan.po.RecommendationPlanPo">
+        SELECT
+          id                                                                  AS id,
+          recommended_type                                                    AS type,
+          plan_id                                                             AS designPlanId,
+          plan_name                                                           AS name,
+          plan_code                                                           AS code,
+          user_id                                                             AS createUserId,
+          living_id                                                           AS livingId,
+          house_id                                                            AS houseId,
+          space_common_id                                                     AS spaceCommonId,
+          remark                                                              AS remark,
+          is_default_decorate                                                 AS isSupportOneKeyDecorate,
+          plan_number                                                         AS planNumber,
+          cover_pic_id                                                        AS coverPicId,
+          design_template_id                                                  AS designTemplateId,
+          design_recommended_style_id                                         AS designStyleId,
+          gmt_create                                                          AS createTime,
+          gmt_modified                                                        AS modifyTime,
+          release_time                                                        AS publishTime,
+          is_release                                                          AS releaseStatus,
+          plan_source                                                         AS planSource,
+          shelf_status                                                        AS shelfStatus,
+          apply_space_areas                                                   AS applySpaceAreas,
+          space_layout_type                                                   AS spaceLayoutType,
+          is_deleted                                                          AS dataIsDeleted,
+          company_id                                                          AS companyId,
+          group_primary_id                                                    AS groupPrimaryId,
+          visit_count                                                         AS visitCount,
+          charge_type                                                         AS chargeType,
+          plan_price                                                          AS planPrice
+        FROM
+            design_plan_recommended
+        WHERE is_deleted = 0
+        limit
+            #{start},#{limit}
+    </select>
+
+
+    <!-- 获取推荐方案信息列表（20181018） -->
+    <select id="queryRecommendationPlanDataList" parameterType="int" resultType="com.sandu.search.entity.designplan.po.RecommendationPlanPo">
+        SELECT
+            a.id                                                                  AS id,
+            a.recommended_type                                                    AS type,
+            a.plan_id                                                             AS designPlanId,
+            a.plan_name                                                           AS name,
+            a.plan_code                                                           AS code,
+            a.user_id                                                             AS createUserId,
+            a.living_id                                                           AS livingId,
+            a.house_id                                                            AS houseId,
+            a.space_common_id                                                     AS spaceCommonId,
+            a.remark                                                              AS remark,
+            a.is_default_decorate                                                 AS isSupportOneKeyDecorate,
+            a.plan_number                                                         AS planNumber,
+            a.cover_pic_id                                                        AS coverPicId,
+            a.design_template_id                                                  AS designTemplateId,
+            a.design_recommended_style_id                                         AS designStyleId,
+            a.gmt_create                                                          AS createTime,
+            a.gmt_modified                                                        AS modifyTime,
+            a.release_time                                                        AS publishTime,
+            a.is_release                                                          AS releaseStatus,
+            a.plan_source                                                         AS planSource,
+            a.shelf_status                                                        AS shelfStatus,
+            a.apply_space_areas                                                   AS applySpaceAreas,
+            a.space_layout_type                                                   AS spaceLayoutType,
+            a.is_deleted                                                          AS dataIsDeleted,
+            a.company_id                                                          AS companyId,
+            a.group_primary_id                                                    AS groupPrimaryId,
+            a.visit_count                                                         AS visitCount,
+            a.charge_type                                                         AS chargeType,
+            a.plan_price                                                          AS planPrice,
+            b.pic_path                                                            AS coverPicPath,
+            SUBSTRING_INDEX(GROUP_CONCAT(c.pic_path ORDER BY c.gmt_create DESC), ',', 1 ) AS ResRenderPicPath,
+            d.space_function_id                                                   AS spaceFunctionId,
+            d.space_areas                                                         AS spaceAreas,
+            d.space_shape                                                         AS spaceShape,
+            d.space_code                                                          AS spaceCode,
+            e.name                                                                AS styleName,
+            f.user_name                                                           AS createUserName,
+            g.company_name                                                        AS companyName,
+            h.pic_path                                                            AS userPicPath,
+            GROUP_CONCAT(DISTINCT j.id)                                           AS brandIds,
+            GROUP_CONCAT(DISTINCT j.brand_name)			                          AS brandNames,
+            GROUP_CONCAT(DISTINCT k.id)                                           AS companyIds,
+            GROUP_CONCAT(DISTINCT k.company_name)			                      AS companyNames
+        FROM
+          design_plan_recommended a
+        LEFT JOIN
+          res_render_pic b ON b.id = a.cover_pic_id
+        LEFT JOIN
+          res_render_pic c ON c.plan_recommended_id = a.id
+            AND c.rendering_type = 4
+            AND c.file_key IN ('design.designPlan.render.pic','design.designPlanRecommended.render.pic')
+            AND c.pic_type = '3DMax渲染原图'
+            AND c.is_deleted = 0
+        LEFT JOIN
+          space_common d ON d.id = a.space_common_id
+        LEFT JOIN
+          base_product_style e ON e.id = a.design_recommended_style_id
+        LEFT JOIN
+          sys_user f ON f.id = a.user_id and f.is_deleted = 0
+        LEFT JOIN
+          base_company g ON g.id = a.company_id
+        LEFT JOIN
+          res_pic h ON h.id = f.pic_id and h.is_deleted = 0
+        LEFT JOIN
+          design_plan_brand i ON i.plan_id = a.id and i.is_deleted = 0
+        LEFT JOIN
+          base_brand j ON j.id = i.brand_id
+        LEFT JOIN
+          base_company k ON k.id = i.company_id
+        WHERE 1=1
+            <if test="recommendationPlanIdList != null and recommendationPlanIdList.size() > 0">
+                and a.id
+                IN
+                <foreach collection="recommendationPlanIdList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            GROUP BY a.id
+        <if test="limit > 0">
+            limit
+              #{start},#{limit}
+        </if>
+    </select>
+
+    <!-- 获取推荐方案打组信息列表 -->
+    <select id="queryRecommendationPlanPoListByRecommendationPlanId" parameterType="int" resultType="com.sandu.search.entity.elasticsearch.po.metadate.DesignPlanRecommendedPo">
+        SELECT
+            id                     AS recommendedPlanId,
+            group_primary_id       AS groupPrimaryId,
+            apply_space_areas      AS applySpaceAreas
+        FROM
+          design_plan_recommended
+        WHERE group_primary_id = #{recommendedPlanId}
+    </select>
+
+</mapper>

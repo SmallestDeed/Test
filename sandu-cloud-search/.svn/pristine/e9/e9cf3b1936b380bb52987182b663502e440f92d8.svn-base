@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.CategoryProductIndexDao">
+
+    <!-- 获取产品信息 -->
+    <select id="queryProductPoList" parameterType="int" resultType="com.sandu.search.entity.elasticsearch.po.ProductPo">
+        SELECT
+          id                                                                  AS id,
+          product_code                                                        AS productCode,
+          product_name                                                        AS productName,
+          brand_id                                                            AS productBrandId,
+          pro_style_id                                                        AS productStyleId,
+          product_style_id_info                                               AS productStyleIdArr,
+          product_spec                                                        AS productSpecification,
+          color_id                                                            AS productColorId,
+          CONVERT(IF(ISNULL(product_length),0,product_length),SIGNED)         AS productLength,
+          CONVERT(IF(ISNULL(product_width),0,product_width),SIGNED)           AS productWidth,
+          CONVERT(IF(ISNULL(product_height),0,product_height),SIGNED)         AS productHeight,
+          sale_price                                                          AS productSalePrice,
+          sale_price_value                                                    AS productSalePriceValue,
+          pic_id                                                              AS productPicId,
+          model_id                                                            AS productModelId,
+          product_desc                                                        AS productDesc,
+          sys_code                                                            AS productSystemCode,
+          gmt_create                                                          AS productCreateDate,
+          gmt_modified                                                        AS productModifyDate,
+          putaway_modified                                                    AS productPutawayDate,
+          is_deleted                                                          AS isDelete,
+          pic_ids                                                             AS productPicArr,
+          material_pic_ids                                                    AS productMaterialId,
+          split_textures_info                                                 AS productMaterialIdArr,
+          product_type_value                                                  AS productTypeValue,
+          product_small_type_value                                            AS productTypeSmallValue,
+          putaway_state                                                       AS productPutawayState,
+          designer_id                                                         AS productDesignerId,
+          series_id                                                           AS productSeriesId,
+          product_model_number                                                AS productModelNumber,
+          measure_code                                                        AS productMeasurementCode,
+          product_smallpox_identify_str                                       AS productCeilingLayoutIden,
+          product_ground_identify                                             AS productGroundLayoutIden,
+          CONVERT(IF(ISNULL(full_pave_length),0,full_pave_length),SIGNED)     AS productFullPaveLength,
+          secrecy_flag                                                        AS secrecyFlag,
+          is_complex_parquet                                                  AS ceilingRandomPatchFlowerFlag,
+          is_deleted                                                          AS dataIsDelete
+        FROM
+            base_product
+        LIMIT
+            #{start},#{limit}
+    </select>
+
+    <!-- 获取产品信息列表 -->
+    <select id="queryProductPoListByProductIdList" parameterType="int" resultType="com.sandu.search.entity.elasticsearch.po.ProductPo">
+        SELECT
+          id                                                                  AS id,
+          product_code                                                        AS productCode,
+          product_name                                                        AS productName,
+          brand_id                                                            AS productBrandId,
+          pro_style_id                                                        AS productStyleId,
+          product_style_id_info                                               AS productStyleIdArr,
+          product_spec                                                        AS productSpecification,
+          color_id                                                            AS productColorId,
+          CONVERT(IF(ISNULL(product_length),0,product_length),SIGNED)         AS productLength,
+          CONVERT(IF(ISNULL(product_width),0,product_width),SIGNED)           AS productWidth,
+          CONVERT(IF(ISNULL(product_height),0,product_height),SIGNED)         AS productHeight,
+          sale_price                                                          AS productSalePrice,
+          sale_price_value                                                    AS productSalePriceValue,
+          pic_id                                                              AS productPicId,
+          model_id                                                            AS productModelId,
+          product_desc                                                        AS productDesc,
+          sys_code                                                            AS productSystemCode,
+          gmt_create                                                          AS productCreateDate,
+          gmt_modified                                                        AS productModifyDate,
+          putaway_modified                                                    AS productPutawayDate,
+          is_deleted                                                          AS isDelete,
+          pic_ids                                                             AS productPicArr,
+          material_pic_ids                                                    AS productMaterialId,
+          split_textures_info                                                 AS productMaterialIdArr,
+          product_type_value                                                  AS productTypeValue,
+          product_small_type_value                                            AS productTypeSmallValue,
+          putaway_state                                                       AS productPutawayState,
+          designer_id                                                         AS productDesignerId,
+          series_id                                                           AS productSeriesId,
+          product_model_number                                                AS productModelNumber,
+          measure_code                                                        AS productMeasurementCode,
+          product_smallpox_identify_str                                       AS productCeilingLayoutIden,
+          product_ground_identify                                             AS productGroundLayoutIden,
+          CONVERT(IF(ISNULL(full_pave_length),0,full_pave_length),SIGNED)     AS productFullPaveLength,
+          secrecy_flag                                                        AS secrecyFlag,
+          is_complex_parquet                                                  AS ceilingRandomPatchFlowerFlag,
+          is_deleted                                                          AS dataIsDelete
+        FROM
+          base_product
+        WHERE
+          id
+        IN
+        <foreach collection="productIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <!-- 查询产品分类关联信息-->
+    <select id="queryGroupProductList" resultType="com.sandu.search.entity.elasticsearch.po.GroupProductPO">
+        select
+        g.id,
+        g.group_code as groupCode,
+        g.group_name as groupName,
+        g.type as houseType,
+        g.state as state,
+        g.code as groupCode2,
+        g.creator AS creator,
+        g.gmt_create gmtCreate,
+        g.modifier,
+        g.gmt_modified as gmtModified,
+        g.location,
+        g.group_price as price,
+        g.group_flag as flag,
+        g.group_width as width,
+        g.group_length as length,
+        g.group_high as high,
+        g.space_function_value AS groupSpaceTypeV,
+        g.space_area_value AS groupSpaceAreaV,
+        g.brand_id AS brandId,
+        g.product_type AS productModel,
+        g.product_style_id_info as styleIds,
+        g.group_type as groupType,
+        g.composite_type compositeType,
+        stt.s1name as groupSpaceTypeName,
+        stt.s2name as spaceAreaStr,
+        s3.name as groupTypeName,
+        s4.name as houseTypeName,
+        bb.brand_name as brandName,
+        rf.file_path as filePath,
+        rp.pic_path as picPath
+        from group_product g
+        LEFT JOIN sys_dictionary s3 on g.composite_type=s3.value and s3.type='restaurantAlbuginea'
+        LEFT JOIN sys_dictionary s4 on g.type=s3.value and s4.type='houseType'
+        LEFT JOIN base_brand bb on g.brand_id = bb.id
+        left join res_file rf on rf.id=g.location
+        left join res_pic rp on g.pic_id=rp.id
+		LEFT JOIN  (select s1.value as gtv,s1.name as s1name,s2.name as s2name,s2.value as areav from sys_dictionary s1  LEFT JOIN sys_dictionary s2 on s1.valuekey = s2.type where s1.type='groupSpaceType') stt
+							ON g.space_function_value = stt.gtv and g.space_area_value = stt.areav
+        where g.is_deleted=0 and g.design_templet_id >0
+        LIMIT
+        #{start},#{limit}
+    </select>
+
+</mapper>

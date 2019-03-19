@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.ResTextureMapper">
+	
+	<!-- **常量定义** -->
+	<sql id="All_Column_List">
+		id,textureBall_file_id,normal_pic_id,normal_param,name,file_name,texture_attr_value,lay_modes,type,file_code,file_size,
+		file_width,file_height,file_suffix,file_path,file_desc,style,texture,sys_code,creator,gmt_create,modifier,gmt_modified,
+		is_deleted,pic_id,att1,att2,numa1,numa2,remark,brand_id,texture_code
+	</sql>
+	
+	<!-- **结果定义** -->
+	<resultMap id="AllResultMap" type="com.sandu.search.entity.product.dto.ResTexture">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result  column="brand_id" property="brandId" jdbcType="INTEGER" />
+		<result  column="texture_code" property="textureCode" jdbcType="VARCHAR" />
+		<result  column="textureBall_file_id" property="textureBallFileId" jdbcType="INTEGER" />
+		<result  column="normal_pic_id" property="normalPicId" jdbcType="INTEGER" />
+		<result  column="normal_param" property="normalParam" jdbcType="VARCHAR" />
+		<result  column="name" property="name" jdbcType="VARCHAR" />
+		<result  column="file_name" property="fileName" jdbcType="VARCHAR" />
+		<result  column="type" property="type" jdbcType="VARCHAR" />
+		<result  column="file_code" property="fileCode" jdbcType="VARCHAR" />
+		<result  column="file_size" property="fileSize" jdbcType="INTEGER" />
+		<result  column="file_width" property="fileWidth" jdbcType="INTEGER" />
+		<result  column="texture_attr_value" property="textureAttrValue" jdbcType="INTEGER" />
+		<result  column="file_height" property="fileHeight" jdbcType="INTEGER" />
+		<result  column="file_suffix" property="fileSuffix" jdbcType="VARCHAR" />
+		<result  column="file_path" property="filePath" jdbcType="VARCHAR" />
+		<result  column="file_desc" property="fileDesc" jdbcType="VARCHAR" />
+		<result  column="lay_modes" property="laymodes" jdbcType="VARCHAR" />
+		<result  column="style" property="style" jdbcType="VARCHAR" />
+		<result  column="texture" property="texture" jdbcType="VARCHAR" />
+		<result  column="sys_code" property="sysCode" jdbcType="VARCHAR" />
+		<result  column="creator" property="creator" jdbcType="VARCHAR" />
+		<result  column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+		<result  column="modifier" property="modifier" jdbcType="VARCHAR" />
+		<result  column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+		<result  column="is_deleted" property="isDeleted" jdbcType="INTEGER" />
+		<result  column="pic_id" property="picId" jdbcType="INTEGER" />
+		<result  column="att1" property="att1" jdbcType="VARCHAR" />
+		<result  column="att2" property="att2" jdbcType="VARCHAR" />
+		<result  column="numa1" property="numa1" jdbcType="INTEGER" />
+		<result  column="numa2" property="numa2" jdbcType="INTEGER" />
+		<result  column="remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- **查询定义** -->
+	<!-- 按主键查询 -->
+	<select id="selectByPrimaryKey" resultMap="AllResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="All_Column_List" />
+		from res_texture
+		where is_deleted=0 and  id = #{id,jdbcType=INTEGER}
+	</select>
+
+     
+     <!-- 通过id 集合 批量获取数据-->
+     <select id="getBatchGet" resultMap="AllResultMap"  parameterType="com.sandu.search.entity.product.dto.ResTexture">
+		select
+		<include refid="All_Column_List" />
+		from res_texture
+		WHERE 1=1 
+		<!-- and is_deleted=0 -->
+		AND id in 
+		<foreach collection="resTextureIds" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+</mapper>

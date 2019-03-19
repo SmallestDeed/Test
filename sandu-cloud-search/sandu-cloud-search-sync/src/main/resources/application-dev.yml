@@ -1,0 +1,107 @@
+#Host: 10.10.30.97
+#Path: /data001/apps/application
+#Commond: nohup java -Xms1g -Xmx4g -jar sandu-cloud-search-1.0-SNAPSHOT.jar  --spring.profiles.active=sit --elasticsearch.indexProductData=false --server.port=6666 >sandu-cloud-search.log &
+#DB Bak Account: test_luogz/JRMPih27SCGk9s7V
+#DateSource
+datasource:
+  url: jdbc:mysql://192.168.1.107:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=true&verifyServerCertificate=false
+  username: root
+  password: Sandu_218root
+
+#Log System
+logging:
+  config: classpath:newlog4j2.xml
+  level: info
+
+#RPC Servive
+dubbo:
+  applicationName: sandu-cloud-search-provider
+  registryAddress: zookeeper01.sanduspace.cn:2181
+  transProtocolName: dubbo
+  transProtocolPort: 20666
+  providerServicesList:
+    - com.sandu.search.service.product.ProductBrandSearchService-productBrandSearchService-dubbo-3000-1.0.0
+    - com.sandu.search.service.product.ProductNameSearchService-productNameSearchService-dubbo-3000-1.0.0
+    - com.sandu.search.service.product.ProductStyleSearchService-productStyleSearchService-dubbo-3000-1.0.0
+    - com.sandu.search.service.product.ProductTextureSearchService-productTextureSearchService-dubbo-3000-1.0.0
+
+#Elasticsearch Service
+elasticsearch:
+  uri:
+#    - 192.168.1.113:9200
+    - 192.168.1.107:5601
+  indexProductData: false
+  indexGroupProductData: false
+  initHouseIndex: false
+  indexRecommendationPlanData: false
+  reIndexProductDataIndexName: product_info_20180829
+  reIndexGoodsDataIndexName: goods_info_20180801
+  recommendedPlanDataIndexName: recommendedplan_info_20180829
+  reIndexGroupProductDataIndexName : group_product_info
+
+#Redis
+redis:
+  #格式：redis://:[密码]@[服务器地址]:[端口]/[db index]
+  uri: redis://:123456@192.168.1.113:33433/0
+  pool:
+    maxActive: 600
+    maxIdle: 600
+    minIdle: 10
+    maxWaitMillis: 20000
+    maxWait: 1000
+    maxTotal: 6000
+
+#Tomcat
+server:
+  port: 15000
+  session:
+    timeout: 7200
+  tomcat:
+    uri-encoding: UTF-8
+    #min-spare-threads: 50
+    #max-connections: 200
+    #max-threads: 200
+  context-path: /fullsearch-app
+  #connection-timeout: 5000
+tomcat:
+  util:
+    http:
+      parser:
+        HttpParser:
+          requestTargetAllow: "|{}"
+
+#Rabbit Mq
+spring:
+  rabbitmq:
+    host: 192.168.1.208
+    port: 5672
+    username: dev
+    password: 8b1asglk
+    publisher-confirms: true
+    #virtual-host: test
+    
+#Sync task
+task:
+  product:
+    incr:
+      cron: 0 0/1 * * * ?
+      fullSyncNum: 50
+    all: # 7200000
+      cron: 0 0/10 * * * ?
+  recommendationplan:
+    all:
+#      cron: 0 0 0/1 * * ?
+      cron: 0 0 0 * * ?
+    incr:
+#      cron: 0 0/5 * * * ?
+      cron: 0 0 0 * * ?
+  goods:
+    incr:
+#      cron: 0 0/1 * * * ?
+      cron: 0 0 0 * * ?
+    all:
+      cron: 0 0 0 * * ?
+
+#Init meta data
+init:
+  metadatafinish: false

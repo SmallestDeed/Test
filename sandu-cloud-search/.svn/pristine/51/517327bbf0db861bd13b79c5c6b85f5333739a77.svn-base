@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.MetaDataDao">
+
+    <!-- 获取草稿设计方案产品元数据 -->
+    <select id="getTempDesignPlanProductMetaDataById" resultType="com.sandu.search.entity.designplan.po.DesignPlanProductPo">
+        SELECT
+        id                AS id,
+        init_product_id   AS initProductId,
+        product_id as productId
+        FROM
+        design_plan_product
+        WHERE
+        is_deleted = 0
+        AND
+        init_product_id &lt;&gt; 0
+        AND
+        id = #{id}
+        LIMIT
+        0,1
+    </select>
+
+    <!-- 获取推荐设计方案产品元数据 -->
+    <select id="getRecommendDesignPlanProductMetaDataById" resultType="com.sandu.search.entity.designplan.po.DesignPlanProductPo">
+        SELECT
+        id                AS id,
+        init_product_id   AS initProductId,
+        product_id as productId
+        FROM
+        design_plan_recommended_product
+        WHERE
+        is_deleted = 0
+        AND
+        init_product_id &lt;&gt; 0
+        AND
+        id = #{id}
+        LIMIT
+        0,1
+    </select>
+
+    <!-- 获取自定义设计方案产品元数据 -->
+    <select id="getDiyDesignPlanProductMetaDataById" resultType="com.sandu.search.entity.designplan.po.DesignPlanProductPo">
+        SELECT
+        id                AS id,
+        init_product_id   AS initProductId,
+        product_id as productId
+        FROM
+        design_plan_product_render_scene
+        WHERE
+        is_deleted = 0
+        AND
+        init_product_id &lt;&gt; 0
+        AND
+        id = #{id}
+        LIMIT
+        0,1
+    </select>
+
+    <!-- 查询产品属性元信息 -->
+    <select id="queryProductAttrMetaDataById" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ProductAttributePo">
+        SELECT
+        bp.id               AS productId,
+        ppp.`code`          AS attributeCode,
+        pp.prop_value       AS attributeValue,
+        ppp.filter_order     AS attributeType
+        FROM
+        base_product bp
+        LEFT JOIN product_attribute pa ON pa.product_id = bp.id
+        LEFT JOIN product_props pp ON pp.id = pa.attribute_value_id
+        LEFT JOIN product_props ppp ON ppp.id = pp.pid
+        WHERE
+        bp.is_deleted = 0 AND bp.id = #{id}
+        AND
+        ppp.`code` IS NOT NULL;
+    </select>
+
+    <select id="getProductInfoById" resultType="com.sandu.search.entity.product.vo.BaiMoProductSearchConditionsVO">
+      SELECT
+          id                                                                  AS id,
+          product_code                                                        AS productCode,
+          CONVERT(IF(ISNULL(product_length),0,product_length),SIGNED)         AS productLength,
+          CONVERT(IF(ISNULL(product_width),0,product_width),SIGNED)           AS productWidth,
+          CONVERT(IF(ISNULL(product_height),0,product_height),SIGNED)         AS productHeight,
+          CONVERT(IF(ISNULL(full_pave_length),0,full_pave_length),SIGNED)     AS productFullPaveLength,
+          <!-- add by huangsongbo 2018.8.3 ->start -->
+          convert(if(isnull(product_type_value), 0, product_type_value), signed) as productTypeValue,
+		  product_small_type_value 	as productTypeSmallValue
+          <!-- add by huangsongbo 2018.8.3 ->end -->
+        FROM
+          base_product
+        WHERE
+          id = #{id} 
+        <!-- and product_code like 'baimo_%' -->
+    </select>
+
+    <!-- 获取自定义推荐方案收藏状态元数据 -->
+    <select id="getRecommendationPlanCollectBidMetaDataByIds" resultType="com.sandu.search.entity.elasticsearch.po.metadate.RecommendedPlanFavoritePo">
+
+        SELECT
+        fr.status AS isFavorite,
+        fr.bid AS bid,
+        dpl.status AS isLike,
+        1 AS planHouseType,
+        dpsi.like_num AS likeCount,
+        dpsi.collect_num AS collectCount,
+        dpsi.view_num AS viewCount,
+        dp.id AS planRecommendedId,
+        0 AS fullHouseId
+        from design_plan_recommended AS dp
+        LEFT JOIN design_plan_like AS dpl ON dpl.design_id = dp.id AND dpl.user_id = #{userId}
+        LEFT JOIN (SELECT fid,recommendId,bid,status from design_plan_recommend_favorite_ref where design_plan_type = 0 and fid in (SELECT bid from sys_business_favorite where userId =#{userId}) ) AS fr ON(fr.recommendId = dp.id)
+        LEFT JOIN design_plan_summary_info dpsi on dpsi.design_id = dp.id and dpsi.design_plan_type = 0 and dpsi.is_deleted = 0
+        where
+        1=1
+        <if test="recommendIdList != null and recommendIdList.size() > 0">
+        and dp.id   IN
+        <foreach collection="recommendIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        </if>
+        <if test="recommendIdList == null or recommendIdList.size() ==0">
+            and dp.id is null
+        </if>
+
+        union
+        SELECT
+        favo.status AS isFavorite,
+        favo.bid,
+        dpl.status AS isLike,
+        2 AS planHouseType,
+        dpsi.like_num AS likeCount,
+        dpsi.collect_num AS collectCount,
+        dpsi.view_num AS viewCount,
+        0 AS planRecommendedId,
+        fh.id AS fullHouseId
+        from full_house_design_plan  AS fh
+        left join design_plan_summary_info dpsi on dpsi.full_house_design_plan_id = fh.id and dpsi.design_plan_type = 1 and dpsi.is_deleted = 0
+        left join design_plan_like dpl on dpl.full_house_design_plan_id = fh.id and dpl.design_plan_type = 1  and dpl.user_id = #{userId}
+        left join (select
+        dprfr.status,
+        dprfr.full_house_design_plan_id,
+        dprfr.bid
+        from
+        sys_business_favorite dpf
+        left join design_plan_recommend_favorite_ref dprfr on dprfr.fid = dpf.bid
+        and dprfr.design_plan_type = 1
+        where
+        dpf.userId = #{userId}
+        )favo on favo.full_house_design_plan_id = fh.id
+        where
+        1=1
+        <if test="fullHouseIdList != null and fullHouseIdList.size() > 0">
+         and fh.id   IN
+        <foreach collection="fullHouseIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        </if>
+        <if test="fullHouseIdList == null or fullHouseIdList.size() ==0">
+            and  fh.id is null
+        </if>
+
+
+    </select>
+
+
+    <select id="queryCompanyById" resultType="com.sandu.search.entity.elasticsearch.po.metadate.CompanyPo">
+        SELECT
+            C.id                        AS companyId,
+            C.pid                       AS companyPid,
+            C.company_code              AS companyCode,
+            C.company_name              AS companyName,
+            C.business_type             AS businessType,
+            C.company_desc              AS companyDesc,
+            C.company_address           AS companyAddress,
+            C.company_domain_name       AS companyDomainName,
+            C.industry                  AS companyIndustry,
+            C.product_visibility_range  AS companyProductVisibilityRange,
+            C.brand_id                  AS dealerBrands
+        FROM
+          base_company C
+        WHERE
+          c.id = #{companyId}
+
+    </select>
+
+    <select id="getProductIdsBySpuId" resultType="java.lang.Integer">
+        select
+          id
+        from
+          base_product
+        where
+          goods_spu_id = #{spuId}
+    </select>
+
+    <!-- 查询用户数据-->
+    <select id="queryUserById" resultType="com.sandu.search.entity.elasticsearch.po.metadate.SysUserPo">
+        SELECT
+            a.id                                                                 AS userId,
+            a.user_name	    												     AS userName,
+            a.nick_name                                                          AS nickName,
+            a.mobile                                                             AS mobile,
+            a.user_type                                                          AS userType,
+            a.sex                                                                AS sex,
+            a.business_administration_id                                         AS businessAdministrationId,
+            a.company_id                                                         AS companyId,
+            a.use_type                                                           AS useType,
+            a.show_sandu_plan                                                    AS showSanduPlan,
+            a.pic_id                                                             AS picId,
+            b.pic_path                                                           AS picPath
+        FROM
+          sys_user a
+        LEFT JOIN
+          res_pic b ON b.id = a.pic_id
+        WHERE
+          a.id = #{userId}
+    </select>
+
+    <select id="getEnableBrandIdsByAppId" resultType="java.lang.String" parameterType="java.lang.String">
+        select
+            enable_brands
+        from
+            base_company_mini_program_config
+        where
+            app_id = #{appId}
+    </select>
+
+    <select id="queryCompanyPoByAppId" resultType="com.sandu.search.entity.elasticsearch.po.metadate.CompanyPo">
+        SELECT
+            C.id                        AS companyId,
+            C.pid                       AS companyPid,
+            C.company_code              AS companyCode,
+            C.company_name              AS companyName,
+            C.business_type             AS businessType,
+            C.company_desc              AS companyDesc,
+            C.company_address           AS companyAddress,
+            C.company_domain_name       AS companyDomainName,
+            C.industry                  AS companyIndustry,
+            C.product_visibility_range  AS companyProductVisibilityRange,
+            C.brand_id                  AS dealerBrands,
+            N.app_id                    AS miniProgramAppId,
+            N.enable_brands             AS enableBrandIds
+        FROM
+          base_company C
+        LEFT JOIN (
+        SELECT
+            M.company_id,
+            M.app_id,
+            M.enable_brands
+        FROM
+          base_company_mini_program_config M
+        WHERE
+            M.is_deleted = 0
+            ) N ON C.id = N.company_id
+        WHERE
+          n.app_id = #{appId}
+          and C.is_deleted = 0
+    </select>
+
+    <select id="getCompanyByAppId" resultType="com.sandu.search.entity.elasticsearch.po.metadate.CompanyPo" parameterType="java.lang.String">
+        SELECT
+            company_id       as companyId,
+            enable_brands    as enableBrandIds,
+            app_id           as miniProgramAppId
+        FROM
+            base_company_mini_program_config
+        WHERE
+            app_id = #{appId}
+    </select>
+</mapper>

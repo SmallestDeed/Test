@@ -1,0 +1,1033 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.MetaDataDao">
+
+    <!-- 查询产品分类元数据 -->
+    <select id="queryProductCategoryMetaData" resultType="com.sandu.search.entity.elasticsearch.po.ProductCategoryPo">
+        SELECT
+            id        AS id,
+            code      AS productCategoryCode,
+            long_code AS productCategoryLongCode,
+            pid       AS parentCategoryId,
+            name      AS categoryName,
+            level     AS categoryLevel,
+            ordering  AS categoryOrder,
+            sys_code  AS categorySystemCode
+        FROM
+            pro_category
+        WHERE
+            is_deleted = 0
+    </select>
+
+    <!-- 查询产品风格元数据 -->
+    <select id="queryProductStyleMetaData" resultType="com.sandu.search.entity.elasticsearch.po.ProductStylePo">
+        SELECT
+          id          AS id,
+          pid         AS parentStyleId,
+          name        AS styleName,
+          code        AS styleCode,
+          long_code   AS styleLongCode,
+          value       AS styleValue,
+          is_leaf     AS isLeaf,
+          level       AS styleLevel,
+          sys_code    AS styleSystemCode
+        FROM
+          base_product_style
+        WHERE
+          is_deleted = 0
+    </select>
+
+    <!-- 查询产品材质元数据 -->
+    <select id="queryProductTextureMetaData" resultType="com.sandu.search.entity.elasticsearch.po.ProductTexturePo">
+        SELECT
+            T.id                  AS id,
+            D.name                AS textureName,
+            T.pic_id              AS picId,
+            T.normal_pic_id       AS normalPicId,
+            T.textureBall_file_id AS textureBallFileId,
+            T.brand_id            AS brandId,
+            T.texture_attr_value  AS textureAttrValue,
+            T.file_height         AS fileHeight,
+            T.file_width          AS fileWidth,
+            T.lay_modes           AS laymodes,
+            T.normal_param        AS normalParam,
+            T.texture_code        AS textureCode
+        FROM
+            res_texture T,
+            sys_dictionary D
+        WHERE
+            D.TYPE = 'texture'
+        AND T.texture = D.VALUE
+        AND T.is_deleted = 0
+        AND D.is_deleted = 0
+    </select>
+
+    <!-- 查询品牌元数据 -->
+    <select id="queryBrandMetaData" resultType="com.sandu.search.entity.elasticsearch.po.BrandPo">
+        SELECT
+            id             AS id,
+            brand_name     AS brandName,
+            company_id     AS companyId,
+            brand_logo     AS brandLogoPicId,
+            brand_desc     AS brandDesc,
+            status_show_wu AS showNoBrand
+        FROM
+            base_brand
+        WHERE
+            is_deleted = 0
+    </select>
+
+    <!-- 查询产品分类关联信息-->
+    <select id="queryProductCategoryRelMetaData"
+            resultType="com.sandu.search.entity.elasticsearch.po.ProductCategoryRelPo">
+        SELECT
+            product_id      AS productId,
+            category_id     AS categoryId
+        FROM
+            product_category_rel
+        WHERE
+            is_deleted = 0
+    </select>
+
+    <!-- 查询图片资源元数据-->
+    <select id="queryResPicMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ResPicPo">
+        SELECT
+          id          AS id,
+          pic_path    AS picPath
+        FROM
+          res_pic
+        WHERE
+          is_deleted = 0
+    </select>
+
+    <!-- 查询图片资源元数据-->
+    <select id="getResPicMetaDataById" parameterType="int" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ResPicPo">
+        SELECT
+          id          AS id,
+          pic_path    AS picPath
+        FROM
+          res_pic
+        WHERE
+          is_deleted = 0
+        AND
+          id = #{id}
+    </select>
+
+    <!-- 查询产品组合关联元数据 -->
+    <select id="queryProductGroupRelMetaData"
+            resultType="com.sandu.search.entity.elasticsearch.po.metadate.ProductGroupRelPo">
+        SELECT
+          id          AS id,
+          group_id    AS productGroupId,
+          product_id  AS productId,
+          is_main     AS productIsMain,
+          sys_code    AS systemCode
+        FROM
+          group_product_details
+        WHERE
+          is_deleted = 0
+    </select>
+
+    <!-- 查询产品组合元数据 -->
+    <select id="queryProductGroupMetaData"
+            resultType="com.sandu.search.entity.elasticsearch.po.metadate.ProductGroupPo">
+        SELECT
+          id                      AS id,
+          group_code              AS productGroupCode,
+          group_name              AS productGroupName,
+          type                    AS productGroupType,
+          pic_id                  AS productGroupPicId,
+          sys_code                AS systemCode,
+          design_templet_id       AS productGroupTmelateId,
+          location                AS productGroupLocationData,
+          group_price             AS productGroupTotalPrice,
+          structure_id            AS productGroupStructureId,
+          group_width             AS productGroupWidth,
+          group_length            AS productGroupLength,
+          group_high              AS productGroupHeight,
+          space_function_value    AS spaceFunctionValue,
+          space_area_value        AS spaceAreaValue,
+          brand_id                AS brandId,
+          group_type              AS productBusinessGroupType,
+          composite_type          AS productCompositeType
+        FROM
+          group_product
+        WHERE
+          is_deleted = 0
+        AND
+          state = 0
+    </select>
+
+    <!-- 查询草稿设计方案产品元数据 -->
+    <select id="queryTempDesignPlanProductMetaData" resultType="com.sandu.search.entity.designplan.po.DesignPlanProductPo">
+        SELECT
+         id                AS id,
+         init_product_id   AS initProductId
+        FROM
+          design_plan_product
+        WHERE
+          is_deleted = 0
+        AND
+          init_product_id &lt;&gt; 0
+        ORDER BY
+          id
+        DESC
+        LIMIT 0,600000
+        <!-- 优化性能，只查询60W数据 -->
+    </select>
+
+    <!-- 查询推荐设计方案产品元数据 -->
+    <select id="queryRecommendDesignPlanProductMetaData" resultType="com.sandu.search.entity.designplan.po.DesignPlanProductPo">
+        SELECT
+          id                AS id,
+          init_product_id   AS initProductId
+        FROM
+          design_plan_recommended_product
+        WHERE
+          is_deleted = 0
+        AND
+          init_product_id &lt;&gt; 0
+    </select>
+
+    <!-- 查询自定义设计方案产品元数据 -->
+    <select id="queryDiyDesignPlanProductMetaData" resultType="com.sandu.search.entity.designplan.po.DesignPlanProductPo">
+        SELECT
+          id                AS id,
+          init_product_id   AS initProductId
+        FROM
+          design_plan_product_render_scene
+        WHERE
+          is_deleted = 0
+        AND
+          init_product_id &lt;&gt; 0
+    </select>
+
+    <!-- 查询产品组合元数据 -->
+    <select id="querySystemDictionaryMetaData"
+            resultType="com.sandu.search.entity.elasticsearch.po.metadate.SystemDictionaryPo">
+        SELECT
+          id        AS id,
+          sys_code  AS systemCode,
+          type      AS dictionaryType,
+          valuekey  AS dictionaryKey,
+          value     AS dictionaryValue,
+          name      AS dictionaryName,
+          ordering  AS dictionaryOrder
+        FROM
+          sys_dictionary
+        WHERE
+          is_deleted = 0
+    </select>
+
+    <!-- 查询户型小区元数据 -->
+    <select id="queryHouseLivingMetaData" resultType="com.sandu.search.entity.elasticsearch.po.house.HouseLivingPo">
+        SELECT
+          id              AS  livingId,
+          living_type     AS  livingType,
+          living_code     AS  livingCode,
+          living_name     AS  livingName,
+          living_address  AS  livingAddress,
+          living_desc     AS  livingDesc,
+          area_id         AS  livingAreaId,
+          build_area      AS  livingBuildArea,
+          cover_area      AS  livingCoverArea,
+          area_long_code  AS  livingAreaLongCode
+        FROM
+          base_living
+        WHERE
+          is_deleted = 0
+    </select>
+
+    <!-- 查询区域元数据 -->
+    <select id="queryAreaMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.AreaPo">
+        SELECT
+          id          AS areaId,
+          area_code   AS areaCode,
+          area_name   AS areaName,
+          pid         AS areaParentId,
+          level_id    AS areaLevelId,
+          zip_code    AS areaZipCode
+        FROM
+          base_area
+        WHERE
+          is_deleted = 0
+    </select>
+
+    <!-- 查询公司元数据 -->
+    <select id="queryCompanyMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.CompanyPo">
+        SELECT
+            C.id                        AS companyId,
+            C.pid                       AS companyPid,
+            C.company_code              AS companyCode,
+            C.company_name              AS companyName,
+            C.business_type             AS businessType,
+            C.company_desc              AS companyDesc,
+            C.company_address           AS companyAddress,
+            C.company_domain_name       AS companyDomainName,
+            C.industry                  AS companyIndustry,
+            C.product_visibility_range  AS companyProductVisibilityRange,
+            C.brand_id                  AS dealerBrands,
+            N.app_id                    AS miniProgramAppId,
+            N.enable_brands             AS enableBrandIds
+        FROM
+            base_company C
+        LEFT JOIN (
+            SELECT
+                M.company_id,
+                M.app_id,
+                M.enable_brands
+            FROM
+                base_company_mini_program_config M
+            WHERE
+                M.is_deleted = 0
+        ) N ON C.id = N.company_id
+        WHERE
+            C.is_deleted = 0
+    </select>
+
+    <!-- 查询公司分类关联元数据 -->
+    <select id="queryCompanyCategoryRelMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.CompanyCategoryRelPo">
+        SELECT
+          company_id    AS companyId,
+          category_id   AS categoryId
+        FROM
+          company_category_rel
+        WHERE
+          is_deleted = 0
+    </select>
+
+    <!-- 查询设计方案样板房元数据 -->
+    <select id="queryDesignTemplatePoMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.DesignTemplatePo">
+        SELECT
+          id                    AS id,
+          space_common_id       AS spaceCommonId
+        FROM
+          design_templet
+        WHERE
+          is_deleted = 0
+    </select>
+
+    <!-- 查询2B平台产品数据-->
+    <select id="queryToBPlatformProductMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ProductPlatformRelPo">
+        SELECT
+            PRO.product_id                                                                  AS productId,
+            PLA.platform_code	    													    AS platformCode,
+            CONVERT(IF(ISNULL(PRO.sale_price),0,PRO.sale_price),SIGNED)                     AS platformProductSalePrice,
+            PRO.advice_price                                                                AS platformProductAdvicePrice,
+            PRO.description                                                                 AS platformProductDesc,
+            PRO.putaway_state                                                               AS platformPutawatStatus,
+            PRO.allot_state                                                                 AS platformStatus,
+            PRO.pic_id                                                                      AS platformCoverPicId,
+            PRO.pic_ids                                                                     AS platformPicIds
+        FROM
+          platform2b_product_rel PRO
+        LEFT JOIN
+		  base_platform PLA
+		ON
+		  PRO.platform_id = PLA.id
+        WHERE
+          PRO.is_deleted = 0
+          AND
+          PLA.is_deleted = 0
+    </select>
+
+    <!-- 查询2C平台产品数据-->
+    <select id="queryToCPlatformProductMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ProductPlatformRelPo">
+        SELECT
+            PRO.product_id                                                                  AS productId,
+            PLA.platform_code	    													    AS platformCode,
+            CONVERT(IF(ISNULL(PRO.sale_price),0,PRO.sale_price),SIGNED)                     AS platformProductSalePrice,
+            PRO.advice_price                                                                AS platformProductAdvicePrice,
+            PRO.description                                                                 AS platformProductDesc,
+            PRO.putaway_state                                                               AS platformPutawatStatus,
+            PRO.allot_state                                                                 AS platformStatus,
+            PRO.pic_id                                                                      AS platformCoverPicId,
+            PRO.pic_ids                                                                     AS platformPicIds
+        FROM
+          platform2c_product_rel PRO
+        LEFT JOIN
+		  base_platform PLA
+		ON
+		  PRO.platform_id = PLA.id
+        WHERE
+          PRO.is_deleted = 0
+          AND
+          PLA.is_deleted = 0
+    </select>
+
+    <!-- 查询三度平台产品数据-->
+    <select id="querySanduPlatformProductMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ProductPlatformRelPo">
+        SELECT
+            PRO.product_id                                                              	AS productId,
+            PLA.platform_code	    													    AS platformCode,
+            CONVERT(IF(ISNULL(PRO.sale_price),0,PRO.sale_price),SIGNED)                     AS platformProductSalePrice,
+            PRO.description                                                                 AS platformProductDesc,
+            PRO.putaway_state                                                               AS platformPutawatStatus,
+            PRO.allot_state                                                                 AS platformStatus
+        FROM
+          platformsandu_product_rel PRO
+		LEFT JOIN
+		  base_platform PLA
+		ON
+		  PRO.platform_id = PLA.id
+        WHERE
+          PRO.is_deleted = 0
+          AND
+          PLA.is_deleted = 0
+    </select>
+
+    <!-- 查询产品属性元信息 -->
+    <select id="queryProductAttrMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ProductAttributePo">
+        SELECT
+            bp.id               AS productId,
+            ppp.`code`          AS attributeCode,
+            pp.prop_value       AS attributeValue,
+            ppp.filter_order    AS attributeType,
+            pp.code             AS sonAttributeCode
+        FROM
+            base_product bp
+        LEFT JOIN product_attribute pa ON pa.product_id = bp.id
+        LEFT JOIN product_props pp ON pp.id = pa.attribute_value_id
+        LEFT JOIN product_props ppp ON ppp.id = pp.pid
+        WHERE
+            bp.is_deleted = 0
+        AND
+            bp.product_code NOT LIKE 'baimo_%'
+        AND
+            ppp.`code` IS NOT NULL;
+    </select>
+
+    <!-- 查询产品使用次数统计-->
+    <select id="queryProductUsageCountSatatistics" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ProductUsagePo">
+        SELECT
+            product_id    AS productId,
+            user_id       AS userId,
+            count         AS productUsageCount
+        FROM
+            product_usage_count
+        WHERE
+            is_deleted = 0;
+    </select>
+
+    <!-- 查询联盟品牌元数据 -->
+    <select id="queryUnionBrandMetaData" resultType="com.sandu.search.entity.elasticsearch.po.UnionBrandPo">
+        SELECT
+            R.union_id  AS unionId,
+            R.brand_id  AS brandId
+        FROM
+            union_brand_ref R
+        LEFT JOIN union_brand U ON R.union_id = U.id
+        WHERE
+            R.is_deleted = 0
+        AND U.is_deleted = 0
+        AND U.`status` = 1;
+    </select>
+
+    <!-- 查询设计方案品牌元数据-->
+    <select id="queryDesignPlanBrandMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.DesignPlanBrandPo">
+        SELECT
+            plan_id          AS designPlanId,
+            brand_id         AS brandId,
+            company_id       AS companyId
+        FROM
+            design_plan_brand
+        WHERE
+            is_deleted = 0
+            AND plan_id IS NOT NULL
+    </select>
+
+    <!-- 查询空间元数据-->
+    <select id="querySpaceCommonMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.SpaceCommonPo">
+        SELECT
+            id                  AS id,
+            space_function_id   AS spaceFunctionId,
+            space_areas         AS spaceAreas,
+            space_shape         AS spaceShape,
+            space_code          AS spaceCode
+
+        FROM
+            space_common
+        WHERE
+            is_deleted = 0
+    </select>
+
+
+    <!-- 查询小程序可用品牌元数据-->
+    <select id="queryBaseCompanyMiniProgramConfigMetaData" resultType="com.sandu.search.entity.elasticsearch.po.BaseCompanyMiniProgramConfig">
+        SELECT
+        app_id                  AS appId,
+        company_id              AS companyId,
+        enable_brands           AS enableBrands
+        FROM
+        base_company_mini_program_config
+        WHERE
+        is_deleted = 0
+    </select>
+
+    <!-- 查询小程序可用品牌元数据-->
+    <select id="queryBaseCompanyMiniProgramConfigMetaDataByAppId" resultType="com.sandu.search.entity.elasticsearch.po.BaseCompanyMiniProgramConfig">
+        SELECT
+        app_id                  AS appId,
+        company_id              AS companyId,
+        enable_brands           AS enableBrands
+        FROM
+        base_company_mini_program_config
+        WHERE
+        is_deleted = 0
+        AND  app_id = #{appId,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 查询商品详情元数据-->
+    <select id="querySpuInfoMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.SpuSaleInfoPo">
+        select
+        id as id,
+        spu_id as spuId,
+        CONVERT(IF(ISNULL(is_special_offer),0,is_special_offer),SIGNED) AS isSpecialOffer,
+        CONVERT(IF(ISNULL(is_presell),0,is_presell),SIGNED) AS isPresell
+        from spu_sale_info where is_deleted = 0
+    </select>
+
+
+    <!-- 查询sku元数据-->
+    <select id="queryGoodsSkuMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.GoodsSkuPo">
+    SELECT
+        id AS id,
+        product_id AS productId,
+        spu_id AS spuId,
+        inventory AS inventory,
+        price AS price,
+        CONVERT(IF(ISNULL(list_pic_id),0,list_pic_id),SIGNED) AS listPicId,
+        CONVERT(IF(ISNULL(specification_pic_id),0,specification_pic_id),SIGNED) AS specificationPicId,
+        CONVERT(IF(ISNULL(main_pic_id),0,main_pic_id),SIGNED) AS mainPicId
+    FROM
+        base_goods_sku
+    WHERE
+        is_deleted = 0
+    </select>
+
+    <!-- 查询基础产品元数据-->
+    <select id="queryBaseProductData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.BaseProductDataPo">
+        SELECT
+            id AS productId,
+            is_deleted AS productIsDeleted,
+            goods_spu_id AS spuId,
+            brand_id AS brandId,
+            product_code AS productCode,
+            product_style_id_info AS productStyleIdInfo,
+            putaway_state AS putawayState,
+            product_spec AS productSpec,
+            product_type_value AS productTypeValue,
+            product_small_type_value AS productSmallTypeValue,
+            product_model_number AS productModelNumber
+        FROM
+            base_product
+        WHERE
+            is_deleted = 0
+        AND LOCATE('baimo', product_code) = 0
+    </select>
+
+    <select id="querySpuInfoById" resultType="com.sandu.search.entity.elasticsearch.po.metadate.SpuSaleInfoPo" parameterType="int">
+        select
+        id as id,
+        spu_id as spuId,
+        CONVERT(IF(ISNULL(is_special_offer),0,is_special_offer),SIGNED) AS isSpecialOffer,
+        CONVERT(IF(ISNULL(is_presell),0,is_presell),SIGNED) AS isPresell
+        from spu_sale_info where is_deleted = 0 and spu_id  = #{spuId}
+    </select>
+
+
+    <!-- 查询2b平台方案数据-->
+    <select id="queryToBPlatformPlanMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.DesignPlanPlatformRelPo">
+        SELECT
+            PLAN.plan_id                                                                    AS planId,
+            PLA.platform_code	    													    AS platformCode,
+            PLAN.design_plan_type                                                           AS platformDesignPlanType,
+            PLAN.putaway_state                                                              AS platformPutawatStatus,
+            PLAN.allot_state                                                                AS platformStatus,
+            PLAN.gmt_modified                                                               AS gmtModified
+        FROM
+            design_plan_2b_platform PLAN
+        LEFT JOIN
+            base_platform PLA
+        ON
+            PLAN.platform_id = PLA.id
+        WHERE
+            PLAN.is_deleted = 0
+        AND PLA.is_deleted = 0
+    </select>
+
+    <!-- 查询2c平台方案数据-->
+    <select id="queryToCPlatformPlanMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.DesignPlanPlatformRelPo">
+        SELECT
+            PLAN.plan_id                                                                    AS planId,
+            PLA.platform_code	    													    AS platformCode,
+            PLAN.design_plan_type                                                           AS platformDesignPlanType,
+            PLAN.putaway_state                                                              AS platformPutawatStatus,
+            PLAN.allot_state                                                                AS platformStatus,
+            PLAN.gmt_modified                                                               AS gmtModified
+        FROM
+            design_plan_2c_platform PLAN
+        LEFT JOIN
+            base_platform PLA
+        ON
+            PLAN.platform_id = PLA.id
+        WHERE
+            PLAN.is_deleted = 0
+        AND PLA.is_deleted = 0
+    </select>
+
+    <!-- 查询2b平台方案数据-->
+    <select id="queryToBPlatformByPlanIdsMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.DesignPlanPlatformRelPo">
+        SELECT
+        PLAN.plan_id                                                                    AS planId,
+        PLA.platform_code	    													    AS platformCode,
+        PLAN.design_plan_type                                                           AS platformDesignPlanType,
+        PLAN.putaway_state                                                              AS platformPutawatStatus,
+        PLAN.allot_state                                                                AS platformStatus
+        FROM
+        design_plan_2b_platform PLAN
+        LEFT JOIN
+        base_platform PLA
+        ON
+        PLAN.platform_id = PLA.id
+        WHERE
+        PLAN.plan_id IN
+        <foreach collection="recommendedPlanIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="type == 1">
+            AND PLAN.design_plan_type in (1,2)
+        </if>
+        <if test="type == 2">
+            AND PLAN.design_plan_type = 3
+        </if>
+        AND PLAN.is_deleted = 0
+        AND PLA.is_deleted = 0
+    </select>
+
+    <!-- 查询2c平台方案数据-->
+    <select id="queryToCPlatformByPlanIdsMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.DesignPlanPlatformRelPo">
+        SELECT
+        PLAN.plan_id                                                                    AS planId,
+        PLA.platform_code	    													    AS platformCode,
+        PLAN.design_plan_type                                                           AS platformDesignPlanType,
+        PLAN.putaway_state                                                              AS platformPutawatStatus,
+        PLAN.allot_state                                                                AS platformStatus,
+        PLAN.gmt_modified                                                               AS gmtModified
+        FROM
+        design_plan_2c_platform PLAN
+        LEFT JOIN
+        base_platform PLA
+        ON
+        PLAN.platform_id = PLA.id
+        WHERE
+          PLAN.plan_id IN
+            <foreach collection="recommendedPlanIdList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        <if test="type == 1">
+            AND PLAN.design_plan_type in (1,2)
+        </if>
+        <if test="type == 2">
+            AND PLAN.design_plan_type = 3
+        </if>
+        AND PLAN.is_deleted = 0
+        AND PLA.is_deleted = 0
+    </select>
+
+    <!-- 查询用户数据-->
+    <select id="queryUserMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.SysUserPo">
+        SELECT
+            a.id                                                                 AS userId,
+            a.user_name	    												     AS userName,
+            a.nick_name                                                          AS nickName,
+            a.mobile                                                             AS mobile,
+            a.user_type                                                          AS userType,
+            a.sex                                                                AS sex,
+            a.business_administration_id                                         AS businessAdministrationId,
+            a.company_id                                                         AS companyId,
+            a.use_type                                                           AS useType,
+            a.show_sandu_plan                                                    AS showSanduPlan,
+            a.pic_id                                                             AS picId,
+            b.pic_path                                                           AS picPath
+        FROM
+          sys_user a
+        LEFT JOIN
+          res_pic b ON b.id = a.pic_id
+        WHERE
+          a.is_deleted = 0
+    </select>
+
+    <!--查询单个商品的产品元数据-->
+    <select id="queryBaseProductDataById" resultType="com.sandu.search.entity.elasticsearch.po.metadate.BaseProductDataPo" parameterType="int">
+        SELECT
+        id AS productId,
+        is_deleted AS productIsDeleted,
+        goods_spu_id AS spuId,
+        brand_id AS brandId,
+        product_code AS productCode,
+        product_style_id_info AS productStyleIdInfo,
+        putaway_state AS putawayState,
+        product_spec AS productSpec,
+        product_type_value AS productTypeValue,
+        product_small_type_value AS productSmallTypeValue,
+        product_model_number AS productModelNumber
+        FROM
+        base_product
+        WHERE
+        is_deleted = 0
+        AND LOCATE('baimo', product_code) = 0
+        AND goods_spu_id = #{spuId}
+    </select>
+
+    <!-- 查询方案小区名称数据-->
+    <select id="queryPlanLivingMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.RecommendedPlanLivingPo">
+        select
+            DISTINCT
+            a.standard_space_id    AS spaceId,
+            c.living_name          AS livingName
+        from
+            house_space a
+        left join
+            base_house b on b.id = a.house_id and b.is_deleted = 0
+        left join
+            base_living c on c.id = b.living_id and c.is_deleted = 0
+        where
+          standard_space_id in
+          (select DISTINCT space_common_id from design_plan_recommended where is_deleted = 0)
+          and a.is_deleted = 0
+    </select>
+
+    <!-- 查询推荐方案720渲染图片资源元数据-->
+    <select id="queryRecommendPlanCoverPicMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ResPicPo">
+        SELECT plan_recommended_id AS id,pic_path AS picPath from res_render_pic where
+        file_key = 'design.designPlanRecommended.render.small.pic' and rendering_type = 4
+        and  plan_recommended_id in (select id FROM design_plan_recommended)
+    </select>
+
+    <!--查询单个商品的SKU数据-->
+    <select id="queryGoodsSkuMetaDataById" resultType="com.sandu.search.entity.elasticsearch.po.metadate.GoodsSkuPo">
+        SELECT
+        id AS id,
+        product_id AS productId,
+        spu_id AS spuId,
+        inventory AS inventory,
+        price AS price,
+        CONVERT(IF(ISNULL(list_pic_id),0,list_pic_id),SIGNED) AS listPicId,
+        CONVERT(IF(ISNULL(specification_pic_id),0,specification_pic_id),SIGNED) AS specificationPicId,
+        CONVERT(IF(ISNULL(main_pic_id),0,main_pic_id),SIGNED) AS mainPicId
+        FROM
+        base_goods_sku
+        WHERE
+        is_deleted = 0 AND spu_id = #{spuId} AND product_id = #{productId}
+    </select>
+
+    <!--查询推荐方案最后渲染图地址-->
+    <select id="queryRecommendedPlanFinallyRenderPicMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ResPicPo">
+        SELECT
+          SUBSTRING_INDEX(GROUP_CONCAT(b.pic_path ORDER BY b.gmt_create DESC), ',', 1 )  AS picPath,
+          b.plan_recommended_id                                                          AS recommendationPlanId
+        FROM
+          design_plan_recommended a
+        LEFT JOIN
+          res_render_pic b
+        ON
+          b.plan_recommended_id = a.id AND b.is_deleted = 0
+        WHERE
+          b.rendering_type = 4
+          AND b.file_key IN ('design.designPlan.render.pic','design.designPlanRecommended.render.pic')
+        GROUP BY
+          b.plan_recommended_id
+    </select>
+
+
+    <select id="queryAllPlatformProductById" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ProductPlatformRelPo">
+        SELECT
+        PRO.product_id                                                                  AS productId,
+        PLA.platform_code	    													    AS platformCode,
+        CONVERT(IF(ISNULL(PRO.sale_price),0,PRO.sale_price),SIGNED)                     AS platformProductSalePrice,
+        PRO.advice_price                                                                AS platformProductAdvicePrice,
+        PRO.description                                                                 AS platformProductDesc,
+        PRO.putaway_state                                                               AS platformPutawatStatus,
+        PRO.allot_state                                                                 AS platformStatus,
+        PRO.pic_id                                                                      AS platformCoverPicId,
+        PRO.pic_ids                                                                     AS platformPicIds
+        FROM
+        platform2c_product_rel PRO
+        LEFT JOIN
+        base_platform PLA
+        ON
+        PRO.platform_id = PLA.id
+        WHERE
+        PRO.is_deleted = 0
+        AND
+        PLA.is_deleted = 0
+        AND
+        PRO.platform_id = 14
+        AND PRO.product_id = #{productId}
+        limit 1
+    </select>
+
+
+
+    <!-- 查询单个产品分类-->
+    <select id="queryProductCategoryById" resultType="com.sandu.search.entity.elasticsearch.po.ProductCategoryPo" parameterType="int">
+        SELECT
+        id        AS id,
+        code      AS productCategoryCode,
+        long_code AS productCategoryLongCode,
+        pid       AS parentCategoryId,
+        name      AS categoryName,
+        level     AS categoryLevel,
+        ordering  AS categoryOrder,
+        sys_code  AS categorySystemCode
+        FROM (
+        SELECT
+        @r AS _id,
+        (SELECT @r := pid FROM pro_category WHERE id = _id) AS parent_id,
+        @l := @l + 1 AS lvl
+        FROM
+        (SELECT @r := #{categoryId}, @l := 0) vars,
+        pro_category h
+        WHERE @r  &lt;&gt;0) T1
+        JOIN pro_category T2
+        ON T1._id = T2.id
+        ORDER BY id;
+    </select>
+
+    <!-- 查询角色菜单数据-->
+    <select id="queryRoleFuncMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.SysRoleFuncPo">
+        select
+          DISTINCT
+          sr.id       AS roleId,
+          sr.code     AS roleCode,
+          sf.id       AS funcId,
+          sf.code     AS funcCode
+        FROM
+          sys_role_func srf
+        LEFT JOIN
+          sys_role sr ON sr.id = srf.roleid AND sr.is_deleted = 0
+        LEFT JOIN
+          sys_func sf ON sf.id = srf.funcid AND sr.is_deleted = 0
+        WHERE
+          srf.is_deleted = 0
+          AND sf.code IS NOT NULL
+    </select>
+
+    <select id="queryProductCategoryRelByProductId"
+            resultType="com.sandu.search.entity.elasticsearch.po.ProductCategoryRelPo" parameterType="int">
+        SELECT
+        product_id      AS productId,
+        category_id     AS categoryId
+        FROM
+        product_category_rel
+        WHERE
+        is_deleted = 0
+        and product_id = #{productId}
+    </select>
+
+    <select id="queryDesignPlanRecommendedMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.DesignPlanRecommendedPo">
+      select
+          id                     AS recommendedPlanId,
+          group_primary_id       AS groupPrimaryId,
+          apply_space_areas      AS applySpaceAreas
+        FROM
+          design_plan_recommended
+        WHERE group_primary_id > 0
+    </select>
+
+
+	<select id="selectPicPathFromResPicById" parameterType="java.lang.Integer" resultType="java.lang.String">
+		select pic_path from res_pic where id = #{id}
+	</select>
+
+	<!-- selectFromResPicByIdList -->
+	<select id="selectFromResPicByIdList" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ResPicPo">
+		select 
+		id as id,
+		pic_path as picPath
+		from res_pic
+		where 
+		id in 
+		<foreach collection="idList" item="idListItem" open="(" close=")" separator=",">
+			#{idListItem}
+		</foreach>
+	</select>
+
+	<select id="queryCompanyShopMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.CompanyShopPo">
+        select
+            id                           as id,
+            company_id                   as companyId,
+            company_pid                  as companyPid,
+            user_id                      as userId,
+            logo_pic_id                  as logoPicId,
+            release_platform_values      as releasePlatformValues,
+            display_status               as displayStatus
+        from
+            company_shop
+        where
+            is_deleted = 0
+    </select>
+	
+    <select id="queryPlanDecoratePriceMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.DecoratePricePo">
+        select
+            plan_recommend_id       as planRecommendId,
+            full_house_id           as fullHouseId,
+            decorate_price_type     as decoratePriceType,
+            decorate_price_range    as decoratePriceRange,
+            decorate_price          as decoratePrice,
+            plan_type               as planType
+        from
+            plan_decorate_price
+        where
+            is_deleted = 0
+    </select>
+
+    <select id="queryPlanDecoratePriceByIdsMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.DecoratePricePo">
+        select
+            plan_recommend_id       as planRecommendId,
+            full_house_id           as fullHouseId,
+            decorate_price_type     as decoratePriceType,
+            decorate_price_range    as decoratePriceRange,
+            decorate_price          as decoratePrice,
+            plan_type               as planType
+        from
+          plan_decorate_price
+        where 1= 1
+            <if test="type == 1">
+                and plan_recommend_id = #{planId}
+            </if>
+            <if test="type == 2">
+                and full_house_id = #{planId}
+            </if>
+            and is_deleted = 0
+    </select>
+
+    <select id="queryCompanyShopPlanMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.CompanyShopPlanPo">
+        select
+            a.shop_id                 as shopId,
+            a.plan_id                 as planId,
+            a.gmt_create              as gmtCreate,
+            b.release_platform_values as shopPlatformValues,
+            a.plan_recommended_type   as planRecommendedType,
+            b.is_deleted              as dataIsDeleted,
+            a.gmt_modified            as gmtModified
+        from
+            company_shop_design_plan a, company_shop b
+        where
+            a.shop_id = b.id
+            and a.is_deleted = 0
+    </select>
+
+    <select id="queryCompanyShopPlanByPlanIdMetaData" resultType="com.sandu.search.entity.elasticsearch.po.metadate.CompanyShopPlanPo">
+        select
+            a.shop_id                 as shopId,
+            a.plan_id                 as planId,
+            a.gmt_create              as gmtCreate,
+            b.release_platform_values as shopPlatformValues,
+            a.plan_recommended_type   as planRecommendedType,
+            b.is_deleted              as dataIsDeleted,
+            a.gmt_modified            as gmtModified
+        from
+            company_shop_design_plan a, company_shop b
+        where
+            a.shop_id = b.id
+            and a.plan_id = #{planId}
+            and a.is_deleted = 0
+            and b.is_deleted = 0
+    </select>
+
+    <select id="queryPlanInfoByShopId" resultType="com.sandu.search.entity.elasticsearch.po.metadate.CompanyShopPlanPo">
+        select
+          plan_id                   AS planId,
+          plan_recommended_type     AS planRecommendedType
+        from
+          company_shop_design_plan
+        where
+          shop_id = #{shopId}
+    </select>
+
+
+    <!-- 查询推荐设计方案产品元数据 -->
+    <select id="queryRecommendedPlanProductMetaData" resultType="com.sandu.search.entity.designplan.po.RecommendedPlanProductPo">
+        SELECT
+          DISTINCT
+          plan_recommended_id                AS recommendedPlanId,
+          product_id                         AS productId
+        FROM
+          design_plan_recommended_product
+        WHERE
+          is_deleted = 0
+    </select>
+
+    <select id="queryRecommendedPlanProductByPlanIdMetaData" resultType="java.lang.Integer">
+        SELECT
+            DISTINCT
+            product_id
+        FROM
+          design_plan_recommended_product
+        WHERE
+          plan_recommended_id = #{planId}
+          and is_deleted = 0
+    </select>
+
+    <select id="selectCompanyShopPlanByFullHouseIds" parameterType="java.util.List" resultType="com.sandu.search.entity.elasticsearch.po.metadate.CompanyShopPlanPo">
+        select
+            shop_id           as shopId,
+            plan_id           as planId,
+            plan_recommended_type as planRecommendedType
+        from
+            company_shop_design_plan
+        where
+            is_deleted = 0
+            and plan_id in
+            <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            and plan_recommended_type = 3
+    </select>
+
+    <select id="queryProductGroupDetail" resultType="com.sandu.search.entity.elasticsearch.po.metadate.ProductGroupDetailPo">
+        select
+            gpd.group_id                                      as productGroupId,
+            gpd.product_id                                    as productId,
+            gpd.is_main                                       as isMainProduct,
+            bp.brand_id                                       as brandId,
+            bp.product_code                                   as productCode,
+            bp.product_type_value                             as productTypeValue,
+            bp.product_type_mark                              as productTypeMark,
+            bp.product_small_type_value                       as productSmallTypeValue,
+            bp.product_small_type_mark                        as productSmallTypeMark,
+            big_dict.value                                    as productTypeValue,
+            big_dict.valuekey                                 as productTypeCode,
+            big_dict.name                                     as productTypeName,
+            small_dict.value                                  as productSmallTypeValue,
+            small_dict.valuekey                               as productSmallTypeCode,
+            small_dict.name                                   as productSmallTypeName,
+            small_dict.att1                                   as rootType,
+            bp.product_height                                 as productHeight,
+            bp.product_width                                  as productWidth,
+            bp.product_length                                 as productLength,
+            bp.material_pic_ids                               as materialPicIds,
+            bp.split_textures_info                            as splitTexturesInfo,
+            bp.windows_u3dmodel_id                            as windowsU3dModelId,
+            gpd.split_textures_choose_info                    as splitTexturesChooseInfo,
+            pa.attribute_key                                  as productAttributeKey,
+            pa.attribute_value_id                             as productAttributeValueId,
+   			pp.prop_value                                     as productPropValue
+        from group_product gp
+        left join group_product_details gpd on gpd.group_id = gp.id
+        left join base_product bp on bp.id = gpd.product_id
+        left join base_brand bb on bp.brand_id=bb.id
+        left join sys_dictionary as big_dict  on big_dict.value=bp.product_type_value
+        left join sys_dictionary as small_dict on small_dict.type=big_dict.valuekey
+            and small_dict.value=bp.product_small_type_value
+        left join product_attribute pa on pa.product_id = gpd.product_id
+        left join product_props pp on pp.id = pa.attribute_value_id
+        where gp.id is not null
+            and gp.design_templet_id = 0
+            and big_dict.type='productType'
+            and big_dict.is_deleted=0
+            and pa.is_deleted=0
+    </select>
+</mapper>

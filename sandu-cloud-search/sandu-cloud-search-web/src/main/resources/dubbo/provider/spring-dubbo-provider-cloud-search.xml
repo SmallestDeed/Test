@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+					http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://code.alibabatech.com/schema/dubbo
+                    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- <dubbo:service interface="com.nork.onekeydesign.service.IntelligenceDecorationService" ref="intelligenceDecorationService" protocol="dubbo" timeout="300000" version="1.0"/> -->
+
+	<dubbo:service interface="com.sandu.search.service.product.dubbo.ProductSearchOpenService" ref="productSearchOpenService" protocol="dubbo" timeout="30000" version="1.0"/>
+	<!--店铺方案信息服务-->
+    <dubbo:service interface="com.sandu.search.service.design.dubbo.ShopSearchPlanService" ref="shopSearchPlanService" protocol="dubbo" timeout="30000" version="1.0"/>
+
+</beans>

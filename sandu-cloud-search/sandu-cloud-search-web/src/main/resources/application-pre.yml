@@ -1,0 +1,78 @@
+#DateSource
+datasource:
+  url: jdbc:mysql://predb.mysql.sanduspace.com:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=true&verifyServerCertificate=false
+  username: dbuser
+  password: Adbuser*$@sandu
+
+#Log System
+logging:
+  config: classpath:newlog4j2.xml
+  level: info
+
+#Elasticsearch Service
+elasticsearch:
+#  uri:
+#    - 10.10.20.149:9200
+  uri:
+    - 10.10.30.81:9200
+    - 10.10.30.82:9200
+    - 10.10.30.83:9200
+    - 10.10.30.84:9200
+  indexProductData: false
+  initGroupProductIndex: false
+  initHouseIndex: false
+  indexRecommendationPlanData: false
+
+#Redis
+redis:
+  #格式：redis://:[密码]@[服务器地址]:[端口]/[db index]
+  uri: redis://:sanduspace@preredis.sanduspace.com:33434/0
+  pool:
+    maxActive: 100
+    maxIdle: 100
+    minIdle: 10
+    maxWaitMillis: 20000
+    maxWait: 1000
+    maxTotal: 6000
+
+#Tomcat
+server:
+  port: 49080
+  session:
+    timeout: 7200
+  tomcat:
+    uri-encoding: UTF-8
+    #min-spare-threads: 50
+    #max-connections: 200
+    #max-threads: 200
+  context-path: /fullsearch-app
+  #connection-timeout: 5000
+
+#Dubbo
+dubbo:
+  registry:
+    address: prezookeeper01.sanduspace.com:2181
+    port: 20104
+
+#定时钟信息
+task:
+  productCategory:
+    categoryLongCodeList:
+      incr: 6000000
+
+#调试模式开关(本地解决用户登录问题)
+system:
+  debugModel: false
+
+#WXURL头
+app:
+  wxapi:
+    url: https://prewxapi.sanduspace.com
+
+
+#Kafka
+spring:
+  kafka:
+    producer:
+      topic: collect-uri
+      bootstrap-servers: 10.10.30.67:9092,10.10.30.68:9092,10.10.30.69:9092

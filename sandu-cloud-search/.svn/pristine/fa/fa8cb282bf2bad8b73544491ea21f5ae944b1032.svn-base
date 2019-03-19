@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.GroupProductIndexDao">
+
+    <!-- 查询产品分类关联信息-->
+    <select id="queryGroupProductList" resultType="com.sandu.search.entity.elasticsearch.po.GroupProductPO">
+        select
+        g.id,
+        g.group_code as groupCode,
+        g.group_name as groupName,
+        g.type as houseType,
+        g.state as state,
+        g.gmt_create as createDate,
+        g.gmt_modified as modifyDate,
+        g.design_templet_id as designTempletId,
+        g.location as groupLocation,
+        g.group_price as groupPrice,
+        g.group_flag as groupFlag,
+        g.group_width as groupWidth,
+        g.group_length as groupLength,
+        g.group_high as groupHight,
+        g.space_function_value AS groupSpaceType,
+        g.space_area_value AS groupSpaceArea,
+        g.brand_id AS brandId,
+        bb.company_id as companyId,
+        g.product_style_id_info as productStyleIdInfo,
+        g.group_type as groupType,
+        g.composite_type as compositeType,
+        g.is_standard as isStandard,
+        g.is_deleted as isDeleted,
+        stt.s1name as groupSpaceTypeName,
+        stt.s2name as spaceAreaStr,
+        s3.name as groupTypeName,
+        s4.name as houseTypeName,
+        rf.file_path as filePath,
+        rp.pic_path as picPath
+        FROM group_product g
+        LEFT JOIN sys_dictionary s3 on g.composite_type=s3.value and s3.type='restaurantAlbuginea'
+        LEFT JOIN sys_dictionary s4 on g.type=s4.value and s4.type='houseType'
+        LEFT JOIN base_brand bb on g.brand_id = bb.id
+        LEFT JOIN res_file rf on rf.id=g.location
+        LEFT JOIN res_pic rp on g.pic_id=rp.id
+		LEFT JOIN  (select s1.value as gtv,s1.name as s1name,s2.name as s2name,s2.value as areav from sys_dictionary s1  LEFT JOIN sys_dictionary s2 on s1.valuekey = s2.type where s1.type='groupSpaceType') stt
+							ON g.space_function_value = stt.gtv and g.space_area_value = stt.areav
+        WHERE g.is_deleted=0 and g.design_templet_id >0
+        LIMIT
+        #{start},#{limit}
+    </select>
+
+</mapper>

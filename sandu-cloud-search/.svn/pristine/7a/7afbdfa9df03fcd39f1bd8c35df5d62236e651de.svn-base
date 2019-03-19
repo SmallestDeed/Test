@@ -1,0 +1,77 @@
+#DateSource
+datasource:
+#dev
+  url: jdbc:mysql://192.168.1.107:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=true&verifyServerCertificate=false
+  username: root
+  password: Sandu_218root
+
+#Log System
+logging:
+  config: classpath:newlog4j2.xml
+  level: info
+
+#Elasticsearch Service
+elasticsearch:
+  uri:
+#    - 192.168.1.113:9200
+    - 192.168.1.107:5601
+  indexProductData: false
+  initGroupProductIndex: false
+  initHouseIndex: false
+  indexRecommendationPlanData: false
+
+#Redis
+redis:
+  #格式：redis://:[密码]@[服务器地址]:[端口]/[db index]
+  
+  #dev
+  uri: redis://:123456@192.168.1.113:33433/0
+
+  pool:
+    maxActive: 600
+    maxIdle: 600
+    minIdle: 100
+    maxWaitMillis: 20000
+    maxWait: 300
+    maxTotal: 6000
+
+#Tomcat
+server:
+  port: 49080
+  session:
+    timeout: 7200
+  tomcat:
+    uri-encoding: UTF-8
+    #min-spare-threads: 2
+    #max-connections: 20
+    #max-threads: 20
+  context-path: /fullsearch-app
+  #connection-timeout: 5000
+tomcat:
+  util:
+    http:
+      parser:
+        HttpParser:
+          requestTargetAllow: "|{}"
+          
+#Dubbo
+dubbo:
+  registry:
+    address: zookeeper01.dev.sanduspace.com:2181
+    port: 20104
+    
+#定时钟信息
+task:
+  productCategory:
+    categoryLongCodeList:
+      incr: 600000
+
+#调试模式开关(本地解决用户登录问题)
+system:
+  debugModel: false
+
+
+#WXURL头
+app:
+  wxapi:
+    url: wxapi.ci.sanduspace.com

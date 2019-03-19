@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--设置log4j2的自身log级别为trace -->
+<configuration status="info">
+    <properties>
+
+        <!--Linux Env-->
+        <Property name="log_path">/data001/data/sandu-yun/logs/sandu-cloud-search-sync</Property>
+
+    </properties>
+    <appenders>
+        <!--控制台输出-->
+        <console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%p][Thread:%t][%d{yyyy-MM-dd HH:mm:ss}]%l: %m %n"/>
+        </console>
+
+        <!--INFO级别日志整理-->
+        <RollingFile name="RollingFileInfo" fileName="${log_path}/info.log"
+                     filePattern="${log_path}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="INFO"/>
+                <ThresholdFilter level="WARN" onMatch="DENY"
+                                 onMismatch="NEUTRAL"/>
+            </Filters>
+            <!--日志格式-->
+            <PatternLayout pattern="[%p][%d{yyyy-MM-dd HH:mm:ss}]%l: %m %n"/>
+            <Policies>
+                <!-- 归档每天的文件 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- 限制单个文件大小 -->
+                <SizeBasedTriggeringPolicy size="50MB"/>
+            </Policies>
+            <!-- 限制每天文件个数 -->
+            <DefaultRolloverStrategy compressionLevel="0" max="10"/>
+        </RollingFile>
+
+        <!--WARN级别日志整理-->
+        <RollingFile name="RollingFileWarn" fileName="${log_path}/warn.log"
+                     filePattern="${log_path}/$${date:yyyy-MM}/warn-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="WARN"/>
+                <ThresholdFilter level="ERROR" onMatch="DENY"
+                                 onMismatch="NEUTRAL"/>
+            </Filters>
+            <!--日志格式-->
+            <PatternLayout pattern="[%p][%d{yyyy-MM-dd HH:mm:ss}]%l: %m %n"/>
+            <Policies>
+                <!-- 归档每天的文件 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- 限制单个文件大小 -->
+                <SizeBasedTriggeringPolicy size="50MB"/>
+            </Policies>
+            <!-- 限制每天文件个数 -->
+            <DefaultRolloverStrategy compressionLevel="0" max="10"/>
+        </RollingFile>
+
+        <!--ERROR级别日志整理-->
+        <RollingFile name="RollingFileError" fileName="${log_path}/error.log"
+                     filePattern="${log_path}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log.gz">
+            <ThresholdFilter level="ERROR"/>
+            <!--日志格式-->
+            <PatternLayout pattern="[%p][%d{yyyy-MM-dd HH:mm:ss}]%l: %m %n"/>
+            <Policies>
+                <!-- 归档每天的文件 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- 限制单个文件大小 -->
+                <SizeBasedTriggeringPolicy size="50MB"/>
+            </Policies>
+            <!-- 限制每天文件个数 -->
+            <DefaultRolloverStrategy compressionLevel="0" max="10"/>
+        </RollingFile>
+
+    </appenders>
+
+    <loggers>
+        <root level="debug">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileWarn"/>
+            <appender-ref ref="RollingFileError"/>
+        </root>
+
+        <!-- 将业务dao接口填写进去,并用控制台输出即可 -->
+        <logger name="com.sandu.*.dao" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+
+        <!-- 第三方日志系统 -->
+        <logger name="org.springframework.core" level="info"/>
+        <logger name="org.springframework.beans" level="info"/>
+        <logger name="org.springframework.context" level="info"/>
+        <logger name="org.springframework.web" level="info"/>
+        <logger name="org.jboss.netty" level="warn"/>
+        <logger name="org.apache.http" level="warn"/>
+    </loggers>
+
+</configuration>

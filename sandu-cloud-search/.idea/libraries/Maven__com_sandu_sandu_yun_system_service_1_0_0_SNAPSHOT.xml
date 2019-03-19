@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.sandu:sandu-yun-system-service:1.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sandu/sandu-yun-system-service/1.0.0-SNAPSHOT/sandu-yun-system-service-1.0.0-20181217.082242-18.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sandu/sandu-yun-system-service/1.0.0-SNAPSHOT/sandu-yun-system-service-1.0.0-20181217.082242-18-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sandu/sandu-yun-system-service/1.0.0-SNAPSHOT/sandu-yun-system-service-1.0.0-20181217.082242-18-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

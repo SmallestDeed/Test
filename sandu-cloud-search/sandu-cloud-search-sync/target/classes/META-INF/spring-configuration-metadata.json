@@ -1,0 +1,102 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "name": "elasticsearch",
+      "type": "com.sandu.search.config.ElasticSearchConfig"
+    },
+    {
+      "sourceType": "com.sandu.search.controller.HelpController",
+      "name": "fullsearch",
+      "type": "com.sandu.search.controller.HelpController"
+    },
+    {
+      "sourceType": "com.sandu.search.config.MessageConfig",
+      "name": "message",
+      "type": "com.sandu.search.config.MessageConfig"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "defaultValue": false,
+      "name": "elasticsearch.index-group-product-data",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "defaultValue": false,
+      "name": "elasticsearch.index-product-data",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "defaultValue": false,
+      "name": "elasticsearch.index-recommendation-plan-data",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "defaultValue": false,
+      "name": "elasticsearch.init-goods-data",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "defaultValue": false,
+      "name": "elasticsearch.init-house-index",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "name": "elasticsearch.re-index-goods-data-index-name",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "name": "elasticsearch.re-index-group-product-data-index-name",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "name": "elasticsearch.re-index-product-data-index-name",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "name": "elasticsearch.recommended-plan-data-index-name",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.sandu.search.config.ElasticSearchConfig",
+      "name": "elasticsearch.uri",
+      "type": "java.util.List<java.lang.String>"
+    },
+    {
+      "sourceType": "com.sandu.search.controller.HelpController",
+      "name": "fullsearch.pro-file-active",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.sandu.search.controller.HelpController",
+      "name": "fullsearch.updatelog",
+      "type": "java.util.Map<java.lang.String,java.lang.String>"
+    },
+    {
+      "sourceType": "com.sandu.search.controller.HelpController",
+      "name": "fullsearch.version",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.sandu.search.config.MessageConfig",
+      "name": "message.message-map",
+      "type": "java.util.Map<java.lang.String,java.lang.String>"
+    },
+    {
+      "sourceType": "com.sandu.search.config.MessageConfig",
+      "name": "message.return-message-map",
+      "type": "java.util.Map<java.lang.String,java.lang.String>"
+    }
+  ]
+}

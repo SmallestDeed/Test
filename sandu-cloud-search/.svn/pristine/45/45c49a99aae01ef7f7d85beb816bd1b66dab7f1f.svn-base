@@ -1,0 +1,107 @@
+#DateSource
+datasource:
+#local
+#  url: jdbc:mysql://192.168.1.107:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=true&verifyServerCertificate=false
+#  username: root
+#  password: Sandu_218root
+
+# ci
+  url: jdbc:mysql://db.mysql.ci.sanduspace.com:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=true&verifyServerCertificate=false
+  username: user_dep
+  password: ?,iN%er(/8ZEr<*nNX11
+
+#online
+#  url: jdbc:mysql://10.10.10.2:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+#  username: user_select
+#  password: uom94cY8A9H5s2rX
+
+#Log System
+logging:
+  config: classpath:newlog4j2.xml
+  level: info
+
+#Elasticsearch Service
+elasticsearch:
+  uri:
+#    - 192.168.1.101:9200
+#    - 192.168.1.113:9200
+#    - 192.168.1.114:9200
+#    - 192.168.1.207:9200
+
+#ci
+    - 10.10.30.81:9200
+    - 10.10.30.82:9200
+    - 10.10.30.83:9200
+    - 10.10.30.84:9200
+    
+#online
+#    - 10.10.20.81:9200
+#    - 10.10.20.82:9200
+#    - 10.10.20.83:9200
+#    - 10.10.20.84:9200
+    
+  indexProductData: false
+  initGroupProductIndex: false
+  initHouseIndex: false
+  indexRecommendationPlanData: false
+
+#Redis
+redis:
+  #格式：redis://:[密码]@[服务器地址]:[端口]/[db index]
+  
+  #local
+  #uri: redis://:123456@192.168.1.113:33433/0
+  
+  #ci
+  uri: redis://:sanduspace@10.10.30.98:33436/0
+  
+  #online
+#  uri: redis://:sanduspace@10.10.20.234:33436/0
+  
+  pool:
+    maxActive: 600
+    maxIdle: 600
+    minIdle: 100
+    maxWaitMillis: 20000
+    maxWait: 300
+    maxTotal: 6000
+
+#Tomcat
+server:
+  port: 9999
+  session:
+    timeout: 7200
+  tomcat:
+    uri-encoding: UTF-8
+    #min-spare-threads: 2
+    #max-connections: 20
+    #max-threads: 20
+  context-path: /fullsearch-app
+  #connection-timeout: 5000
+tomcat:
+  util:
+    http:
+      parser:
+        HttpParser:
+          requestTargetAllow: "|{}"
+          
+#Dubbo
+dubbo:
+  registry:
+    address: 127.0.0.1:2181
+    port: 20898
+    
+#定时钟信息
+task:
+  productCategory:
+    categoryLongCodeList:
+      incr: 6000
+
+#调试模式开关(本地解决用户登录问题)
+system:
+  debugModel: true
+
+#WXURL头
+app:
+  wxapi:
+    url: https://wxapi.ci.sanduspace.com

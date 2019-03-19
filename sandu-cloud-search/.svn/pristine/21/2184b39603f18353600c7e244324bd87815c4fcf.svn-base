@@ -1,0 +1,8 @@
+redis.pool.sso.host=redislogin.ci.sanduspace.com
+redis.pool.sso.port=33436
+redis.pool.sso.password=sanduspace
+redis.pool.sso.maxIdle=300
+redis.pool.sso.maxTotal=6000
+redis.pool.sso.minIdle=100
+redis.pool.sso.maxWaitMillis=1000
+

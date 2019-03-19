@@ -1,0 +1,14 @@
+#Rabbit Mq
+spring:
+  rabbitmq:
+    host: 10.10.30.134
+    #host: amqp.ci.sanduspace.com
+    port: 5672
+    username: admin
+    password: 123456abc
+    publisher-confirms: true
+    #virtual-host: test
+
+#Log System
+logging:
+  config: classpath:log4j2.xml

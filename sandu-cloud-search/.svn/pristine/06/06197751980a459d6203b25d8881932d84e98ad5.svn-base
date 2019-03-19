@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.GroupProductIndexDao">
+
+    <!-- 查询产品分类关联信息-->
+    <select id="queryGroupProductList" resultType="com.sandu.search.entity.elasticsearch.po.GroupProductPO">
+        select
+            id                      AS id,
+            group_code              AS groupCode,
+            group_name              AS groupName,
+            type                    AS type,
+            state                   AS groupState,
+            gmt_create              AS createDate,
+            gmt_modified            AS modifyDate,
+            design_templet_id       AS templateId,
+            location                AS groupLocation,
+            group_price             AS groupPrice,
+            group_flag              AS groupFlag,
+            group_width             AS groupWidth,
+            group_length            AS groupLength,
+            group_high              AS groupHight,
+            space_function_value    AS groupHouseType,
+            space_area_value        AS spaceArea,
+            brand_id                AS brandId,
+            company_id              AS companyId,
+            style_value             AS groupStyle,
+            product_type            AS productModelNumber,
+            product_style_id_info   AS groupStyleIds,
+            group_type              AS groupType,
+            composite_type          AS compositeType,
+            remark                  AS remark,
+            is_deleted              AS dataIsDelete
+        FROM
+            group_product
+        LIMIT
+            #{start},#{limit}
+    </select>
+
+</mapper>

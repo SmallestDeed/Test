@@ -1,0 +1,103 @@
+#DateSource
+datasource:
+# local
+  url: jdbc:mysql://192.168.1.107:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=true&verifyServerCertificate=false
+  username: root
+  password: Sandu_218root
+
+# ci
+#  url: jdbc:mysql://10.10.30.105:3306/test_app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&autoReconnect=true
+#  username: dev_zhangwj
+#  password: abc123
+
+#Log System
+logging:
+  config: classpath:newlog4j2.xml
+  level: info
+
+#Elasticsearch Service
+elasticsearch:
+  uri:
+  # local
+     - 192.168.1.101:9200
+     - 192.168.1.113:9200
+     - 192.168.1.114:9200
+     - 192.168.1.207:9200
+
+# ci
+ #    - 10.10.30.81:9200
+  #   - 10.10.30.82:9200
+  #   - 10.10.30.83:9200
+  #   - 10.10.30.84:9200
+
+  indexProductData: false
+  indexGroupProductData: false
+  initHouseIndex: false
+  indexRecommendationPlanData: false
+  initGoodsData: true
+  reIndexProductDataIndexName : product_info_20180728
+  reIndexGoodsDataIndexName : goods_info_20180801
+  reIndexGroupProductDataIndexName : group_product_info
+
+#Redis
+redis:
+  #格式：redis://:[密码]@[服务器地址]:[端口]/[db index]
+  #local
+ uri: redis://:123456@192.168.1.113:33433/0
+  #ci
+#  uri: redis://:sanduspace@10.10.30.98:33436/0
+  pool:
+    maxActive: 600
+    maxIdle: 600
+    minIdle: 100
+    maxWaitMillis: 20000
+    maxWait: 300
+    maxTotal: 6000
+
+#Tomcat
+server:
+  port: 9999
+  session:
+    timeout: 7200
+  tomcat:
+    uri-encoding: UTF-8
+    #min-spare-threads: 2
+    #max-connections: 20
+    #max-threads: 20
+  context-path: /fullsearch-app
+  #connection-timeout: 5000
+tomcat:
+  util:
+    http:
+      parser:
+        HttpParser:
+          requestTargetAllow: "|{}"
+
+#Rabbit Mq
+spring:
+  rabbitmq:
+    host: 192.168.1.208
+    port: 5672
+    username: dev
+    password: 8b1asglk
+    publisher-confirms: true
+    #virtual-host: test
+
+#Sync task
+task:
+  product:
+    incr: 5000
+    all: 36000000000000
+  recommendationplan:
+    all:
+      cron: 0 0 0/1 * * ?
+    incr:
+      cron: 0 0/5 * * * ?
+  goods:
+    incr:
+      cron: 0 0/5 * * * ?
+    all:
+      cron: 0 0 0 * * ?
+#Init meta data
+init:
+  metadatafinish: true

@@ -1,0 +1,438 @@
+//Elasticsearch Config
+PUT /product_info_20180829/_settings
+{
+  "index" :
+  {
+    "max_result_window" : 100000000
+  }
+
+}
+
+PUT /recommendedplan_info_20180829/_settings
+{
+  "index" :
+  {
+    "max_result_window" : 100000000
+  }
+
+}
+
+/*产品索引别名映射*/
+POST /_aliases
+{
+    "actions" : [
+        { "add" : { "index" : "product_info_20180829", "alias" : "product_info_aliases" } }
+    ]
+}
+
+
+/*产品数据映射*/
+PUT /product_info_20180829
+{
+  "settings": {
+    "index.mapping.total_fields.limit": 9999,
+    "number_of_shards": 4,
+    "number_of_replicas": 1,
+    "analysis": {
+      "analyzer": {
+        "ik_analyzer": {
+          "tokenizer": "ik_smart"
+        },
+        "pinyin_analyzer": {
+          "tokenizer": "my_pinyin"
+        },
+        "ngram_analyzer": {
+          "tokenizer": "ngram_tokenizer",
+          "filter" : ["unique","lowercase","trim"]
+        },
+        "caseSensitive": {
+          "filter": "lowercase",
+          "type": "custom",
+          "tokenizer": "keyword"
+        }
+      },
+      "tokenizer": {
+        "my_pinyin": {
+          "type": "pinyin",
+          "keep_separate_first_letter": false,
+          "keep_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "remove_duplicated_term": true
+        },
+        "ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 2,
+          "max_gram": 50,
+          "token_chars": [
+            "letter",
+            "digit",
+            "punctuation",
+            "symbol"
+          ]
+        }
+      },
+      "normalizer": {
+          "my_normalizer": {
+            "type": "custom",
+            "char_filter": [],
+            "filter": ["lowercase", "asciifolding"]
+          }
+      }
+    }
+  },
+  "mappings": {
+    "product": {
+      "properties": {
+        "productCode": {
+           "type": "keyword",
+           "normalizer": "my_normalizer"
+        },
+        "productName": {
+          "type": "text",
+          "analyzer": "ngram_analyzer",
+          "search_analyzer": "caseSensitive",
+          "fielddata": true
+        },
+        "productBrandName": {
+          "type": "text",
+          "analyzer": "ngram_analyzer",
+          "search_analyzer": "caseSensitive",
+          "fielddata": true
+        },
+        "productDesc": {
+          "type": "text",
+          "analyzer": "ik_analyzer"
+        },
+        "productSpecification": {
+          "type": "text",
+          "analyzer": "ik_analyzer"
+        },
+        "productCreateDate": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+        "productModifyDate": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+        "productPutawayDate": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+        "productModelNumber": {
+          "type": "text",
+          "analyzer": "ngram_analyzer",
+          "search_analyzer": "caseSensitive",
+          "fielddata": true
+        },
+        "firstLevelCategoryName": {
+          "type": "keyword"
+        },
+        "secondLevelCategoryName": {
+          "type": "keyword"
+        },
+        "thirdLevelCategoryName": {
+          "type": "keyword"
+        },
+        "fourthLevelCategoryName": {
+          "type": "keyword"
+        },
+        "fifthLevelCategoryName": {
+          "type": "keyword"
+        },
+        "productCategoryLongCodeList": {
+          "type": "keyword"
+        },
+        "productLength": {
+          "type": "short"
+        },
+        "productHeight": {
+          "type": "short"
+        },
+        "productMeasurementCode": {
+          "type": "text",
+          "analyzer": "standard"
+        },
+        "productCeilingLayoutIden": {
+          "type": "text",
+          "analyzer": "standard"
+        },
+        "productGroundLayoutIden": {
+          "type": "text",
+          "analyzer": "standard"
+        },
+        "productLayoutIden": {
+          "type": "text",
+          "analyzer": "standard"
+        },
+        "categoryName": {
+          "type": "keyword"
+        },
+        "brandAndName": {
+          "type": "text",
+          "analyzer": "ik_analyzer"
+        },
+        "platformCodeList": {
+          "type": "keyword"
+        },
+        "bmIds": {
+          "type": "keyword"
+        },
+        "splitTexturesInfo": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}
+
+/*推荐方案数据映射*/
+POST /_aliases
+{
+    "actions" : [
+        { "add" : { "index" : "recommendedplan_info_20180829", "alias" : "recommendation_plan_aliases" } }
+    ]
+}
+
+/*查询别名别名映射*/
+GET _alias
+
+PUT /recommendedplan_info_20181129
+{
+  "settings": {
+    "index.mapping.total_fields.limit": 9999,
+    "number_of_shards": 4,
+    "number_of_replicas": 1,
+    "analysis": {
+      "analyzer": {
+        "pinyin_analyzer": {
+          "tokenizer": "my_pinyin"
+        },
+        "ngram_analyzer": {
+          "tokenizer": "ngram_tokenizer",
+          "filter" : ["unique","lowercase","trim"]
+        },
+		    "code_analyzer": {
+          "tokenizer": "code_tokenizer",
+          "filter" : ["unique","lowercase","trim"]
+        }
+      },
+      "tokenizer": {
+        "my_pinyin": {
+          "type": "pinyin",
+          "keep_separate_first_letter": false,
+          "keep_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "remove_duplicated_term": true
+        },
+        "ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 1,
+          "max_gram": 50,
+          "token_chars": [
+            "letter",
+            "digit",
+            "punctuation",
+            "symbol"
+          ]
+        },
+    	"code_tokenizer": {
+    	  "type": "path_hierarchy",
+          "delimiter": "_",
+          "skip": 0
+    	}
+      }
+    }
+  },
+  "mappings": {
+    "recommendationPlan": {
+      "properties": {
+        "name": {
+           "type": "text",
+           "analyzer": "ngram_analyzer",
+           "search_analyzer": "keyword"
+        },
+        "code": {
+           "type": "text",
+           "analyzer": "code_analyzer",
+           "search_analyzer": "keyword"
+        },
+        "createTime": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+        "modifyTime": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+        "publishTime": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+        "brandNameList": {
+          "type": "text",
+          "analyzer": "ngram_analyzer",
+          "search_analyzer": "keyword"
+        },
+        "createUserName": {
+          "type": "text",
+          "analyzer": "ngram_analyzer",
+          "search_analyzer": "keyword"
+        },
+        "livingNameList": {
+          "type": "text",
+          "analyzer": "ngram_analyzer",
+          "search_analyzer": "keyword"
+        },
+        "planSource": {
+          "type": "keyword"
+        },
+        "platformCodeList": {
+          "type": "keyword"
+        },
+        "shelfStatusList": {
+           "type": "keyword"
+        },
+        "platformDesignPlanSelectDecoration.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+          "platformDesignPlanMiniProgram.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+          "platformDesignPlanToBMobile.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+          "platformDesignPlanToBPc.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+          "platformDesignPlanToCSite.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+          "platformDesignPlanToCMobile.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+          "platformDesignPlanSanduManager.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+          "platformDesignPlanHouseDraw.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+          "platformDesignPlanMerchantsManager.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+          "platformDesignPlanTest.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+          "platformDesignPlanU3dPlugin.gmtModified":{
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+        "planShopInfoList": {
+            "type": "nested",
+            "properties": {
+                "releasePlatformList": { "type": "keyword" },
+                "gmtCreate": { "type": "date", "format": "yyyy-MM-dd HH:mm:ss" },
+                "gmtModified": { "type": "date", "format": "yyyy-MM-dd HH:mm:ss" }
+            }
+        }
+      }
+    }
+  }
+}
+
+
+/*商品列表添加别名映射*/
+POST /_aliases
+{
+    "actions" : [
+        { "add" : { "index" : "goods_info_20180801", "alias" : "goods_info_aliases" } }
+    ]
+}
+
+/*查询别名别名映射*/
+GET _alias
+
+
+/*商品列表数据映射*/
+PUT /goods_info_20180801
+{
+  "settings": {
+    "index.mapping.total_fields.limit": 9999,
+    "number_of_shards": 4,
+    "number_of_replicas": 1,
+    "analysis": {
+      "analyzer": {
+        "ik_analyzer": {
+          "tokenizer": "ik_smart"
+        },
+        "pinyin_analyzer": {
+          "tokenizer": "my_pinyin"
+        },
+        "ngram_analyzer": {
+          "tokenizer": "ngram_tokenizer"
+        }
+      },
+      "tokenizer": {
+        "my_pinyin": {
+          "type": "pinyin",
+          "keep_separate_first_letter": false,
+          "keep_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "remove_duplicated_term": true
+        },
+        "ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 2,
+          "max_gram": 50,
+          "token_chars": [
+            "letter",
+            "digit",
+            "punctuation",
+            "symbol"
+          ]
+        }
+      }
+    }
+  },
+    "mappings": {
+      "goods": {
+        "properties": {
+          "goodsGetTime": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss"
+          },
+          "goodsGmtCreatetime": {
+           "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss"
+          },
+          "goodsGmtModified": {
+           "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss"
+          },
+          "goodsSpuName": {
+            "type": "text",
+            "analyzer": "ik_analyzer"
+          },
+          "goodsSkuPoList.productCategoryLongCodeList":{
+           "type": "keyword"
+          }
+        }
+      }
+    }
+  }

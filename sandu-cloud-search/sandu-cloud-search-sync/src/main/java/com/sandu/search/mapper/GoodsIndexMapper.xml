@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandu.search.dao.GoodsIndexDao">
+
+    <!-- 获取商品信息 -->
+    <select id="queryGoodsPoList" parameterType="int" resultType="com.sandu.search.entity.elasticsearch.po.BaseGoodsSpuPo">
+
+         SELECT
+              spu.id AS id,
+              spu.spu_code AS spuCode,
+              spu.spu_name AS spuName,
+              spu.is_putaway AS isPutaway,
+              spu.get_time AS getTime,
+              spu.gmt_create AS gmtCreate,
+              spu.gmt_modified AS gmtModified,
+              spu.company_id AS companyId,
+              CONVERT(IF(ISNULL(spu.pic_id),0,spu.pic_id),SIGNED) AS picId,
+              CONVERT(IF(ISNULL(spu.pic_ids),0,spu.pic_ids),SIGNED) AS picIds
+                FROM
+                    base_goods_spu spu
+                WHERE
+                spu.is_deleted = 0
+        LIMIT #{start},#{limit}
+    </select>
+
+
+    <!-- 根据商品ID获取商品信息 -->
+    <select id="queryGoodsPoListByProductIdList" parameterType="int" resultType="com.sandu.search.entity.elasticsearch.po.BaseGoodsSpuPo">
+
+        SELECT
+        spu.id AS id,
+        spu.spu_code AS spuCode,
+        spu.spu_name AS spuName,
+        spu.is_putaway AS isPutaway,
+        spu.get_time AS getTime,
+        spu.gmt_create AS gmtCreate,
+        spu.gmt_modified AS gmtModified,
+        spu.company_id AS companyId,
+        spu.is_deleted AS dataIsDelete,
+        CONVERT(IF(ISNULL(spu.pic_id),0,spu.pic_id),SIGNED) AS picId,
+        CONVERT(IF(ISNULL(spu.pic_ids),0,spu.pic_ids),SIGNED) AS picIds
+        FROM
+        base_goods_spu spu
+        WHERE
+        spu.id
+        IN
+        <foreach collection="goodsIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+</mapper>
