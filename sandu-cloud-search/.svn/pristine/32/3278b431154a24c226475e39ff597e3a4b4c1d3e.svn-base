@@ -1,8 +1,0 @@
-spring:
-  profiles:
-    active: local
-
-#平台标识
-rabbit:
-  message:
-    platform: pc2b
