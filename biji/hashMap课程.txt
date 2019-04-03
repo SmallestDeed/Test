@@ -1,0 +1,29 @@
+11111
+
+hashMap 1.8之后的数据结构是：数组+链表+红黑树
+初始化len=16
+扩容len*0.75
+
+key：hash值&16
+
+
+多线程本质---》内存模型：原子性，可见性，有序性
+
+
+hashmap 不安全 
+hashTable synchronized
+concurrentmap cas
+
+mhashap的容器长度是2的n次幂
+
+互斥锁？？？
+分段锁？？？segment
+
+concurrenthashmap 1.7是分段锁
+
+面试：让arrayLIst线程安全，linkedList？？？
+
+
+
+
+
