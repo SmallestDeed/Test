@@ -1,0 +1,24 @@
+
+Collection为父类
+主要常用的子类有：List、Set、Queue
+List和Set的区别：
+1）.List有序（插入和取出的顺序一致）；	Set无须
+2）.List元素可以重复；					Set元素不可以重复
+3）.
+
+1.List主要的子类有ArrayList、LinkedList、vector
+区别：
+1）.ArrayList和LinkedList是线程不安全的；				Vector是线程安全的		---为什么安全？？？
+2）.ArrayList底层数据结构是数组，增删改慢，查询快；		LinkedList底层数据结构是链表，增删改快，查询慢
+3）.
+
+
+2.Set常用的子类有TreeSet、HashSet、LinkedHashSet
+
+3.Queue主要就队列，先进先出
+
+
+
+
+
+
