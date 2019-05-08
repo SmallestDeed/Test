@@ -24,7 +24,7 @@ jdk1.7和1.8的区别：（hashmap的区别）
 -------------------------------------------------------------------
 随手记的面试题：
 1.java创建对象有哪几种方式？
-	5种：new，Class.newInstance，Constrantor.newInstance，clone，反序列化----springIOC
+	5种：new，Class.forName("全包名").newInstance()，Constrantor.newInstance()，clone，反序列化----springIOC
 2.创建线程有哪几种方式？
 	继承Thread类，实现runnable接口，实现collable接口，线程池
 3.线程池submit和excutor的区别？
