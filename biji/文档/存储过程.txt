@@ -1,0 +1,60 @@
+CREATE DEFINER=`root`@`%` PROCEDURE `set_spu_id`()
+BEGIN
+	DECLARE v_product_id INT;         -- 产品ID
+	DECLARE v_brand_referred VARCHAR(512);     -- 品牌缩写
+	DECLARE v_pic_id INT;                   -- 缩略图ID
+	DECLARE v_product_desc VARCHAR(512);     -- 产品描述
+	DECLARE v_company_id INT;              -- 公司ID
+	DECLARE v_product_name VARCHAR(512);       -- 产品名称
+	DECLARE v_product_code VARCHAR(310);  -- 产品编码
+	DECLARE v_brand_id INT;                  -- 品牌ID
+	DECLARE v_product_model_number VARCHAR(512);   -- 产品型号
+	DECLARE v_big_type_valuekey VARCHAR(32);    -- 产品大类编码
+	DECLARE v_small_type_valuekey VARCHAR(32);    -- 产品小类编码
+	DECLARE v_brand_name VARCHAR(512);    -- 品牌名称
+	DECLARE v_pic_ids VARCHAR(512);     -- 图片ids
+	DECLARE done INT DEFAULT FALSE; 
+	
+	DECLARE v_pre_brand_id INT;                  -- 上一次品牌ID
+	DECLARE v_pre_product_model_number VARCHAR(512);   -- 上一次产品型号
+	DECLARE v_pre_big_type_valuekey VARCHAR(32);    -- 上一次产品大类编码
+	DECLARE v_pre_small_type_valuekey VARCHAR(32);    -- 上一次产品小类编码
+	
+	DECLARE product_cursor cursor for SELECT p.id,rel.pic_id,rel.pic_ids,p.product_desc,p.company_id,p.product_name,p.product_code,p.brand_id,b.brand_name,b.brand_referred,p.product_model_number,d1.valuekey,d2.valuekey FROM base_product p inner join platform2c_product_rel rel on rel.product_id = p.id and rel.platform_id = 14 LEFT JOIN ( SELECT * FROM sys_dictionary WHERE type = "productType" ) d1 ON d1.VALUE = p.product_type_value LEFT JOIN sys_dictionary d2 ON d2.type = d1.valuekey AND d2.VALUE = p.product_small_type_value LEFT JOIN base_brand b ON b.id = p.brand_id WHERE p.is_deleted = 0 AND p.product_code NOT LIKE 'baimo%' AND p.product_code NOT LIKE 'basic%' AND p.goods_spu_id is null ORDER BY p.product_model_number;
+	
+	OPEN product_cursor;
+	
+	read_loop: LOOP
+		FETCH product_cursor INTO v_product_id,v_pic_id,v_pic_ids,v_product_desc,v_company_id,v_product_name,v_product_code,v_brand_id,v_brand_name,v_brand_referred,v_product_model_number,v_big_type_valuekey,v_small_type_valuekey;
+	
+		IF done THEN -- 判断是否继续循环 
+		
+			LEAVE read_loop; -- 结束循环
+			
+		ELSE
+			IF v_brand_name = '无品牌' THEN
+				INSERT INTO base_goods_spu(company_id,product_name,product_model_number,small_type_mark,product_desc,spu_name,pic_id,pic_ids) values(v_company_id,v_product_name,v_product_model_number,v_small_type_valuekey,v_product_desc,v_product_name,v_pic_id,v_pic_ids);
+				SELECT id INTO @v_spu_id from base_goods_spu order by id desc limit 0,1;
+				UPDATE base_product SET goods_spu_id = @v_spu_id where id = v_product_id ;
+			ELSE
+				IF v_brand_id = v_pre_brand_id and v_product_model_number = v_pre_product_model_number and v_big_type_valuekey = v_pre_big_type_valuekey and v_small_type_valuekey = v_pre_small_type_valuekey THEN 
+					SELECT id INTO @v_spu_id from base_goods_spu order by id desc limit 0,1;
+					UPDATE base_product SET goods_spu_id = @v_spu_id where id = v_product_id ;
+				ELSE
+					INSERT INTO base_goods_spu(company_id,product_name,product_model_number,small_type_mark,product_desc,spu_name,pic_id,pic_ids) values(v_company_id,v_product_name,v_product_model_number,v_small_type_valuekey,v_product_desc,v_product_name,v_pic_id,v_pic_ids);
+					SELECT id INTO @v_spu_id from base_goods_spu order by id desc limit 0,1;
+					UPDATE base_product SET goods_spu_id = @v_spu_id where id = v_product_id ;
+					
+					SET v_pre_brand_id = v_brand_id;
+					SET v_pre_product_model_number = v_product_model_number;
+					SET v_pre_big_type_valuekey = v_big_type_valuekey;
+					SET v_pre_small_type_valuekey = v_small_type_valuekey;
+				END IF;
+			
+			END IF;
+		
+		END IF;
+	
+	END LOOP read_loop;	-- 结束自定义循环体 
+	CLOSE product_cursor; -- 关闭游标  
+END

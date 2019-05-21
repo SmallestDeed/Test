@@ -1,0 +1,85 @@
+三度平台
+
+
+知识库地址：http://192.168.1.239:8090/login.action?logout=true 
+JIRA: http://192.168.1.201:8080/secure/Dashboard.jspa
+禅道：http://192.168.1.115/www/index.php?m=my&f=index
+http://10.10.30.188:8888/jenkins/
+
+jenkison    dev   8v99bkt^R3#G6F&8
+luweihua   luweihua@123
+
+知识库用户名：gaoj,密码1234
+jira用户名：你的中文名，密码aa123456
+禅道：名字拼音，密码123456
+周报：手机号，密码123456
+svn：gaoj/gaoj6688
+配置文件svn账号:test/dep1234
+windows堡垒机，teleport：gaojun，gaojun
+
+dev
+jdbc.url=jdbc:mysql://192.168.1.107:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull 
+jdbc.username=root
+jdbc.password=Sandu_218root
+旧test
+jdbc.url=jdbc:mysql://10.10.30.105:3306/test_app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+jdbc.username=dev_zhangwj
+jdbc.password=abc123
+test环境
+jdbc.url=jdbc:mysql://192.168.1.106:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+jdbc.username=user_dep
+jdbc.password=?,iN%er(/8ZEr<*nNX11
+ci
+jdbc.url=jdbc:mysql://db.mysql.ci.sanduspace.com:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&autoReconnect=true&allowMultiQueries=true
+jdbc.username=user_dep
+jdbc.password=?,iN%er(/8ZEr<*nNX11
+预发布
+10.10.20.119:3306
+user_select   uom94cY8A9H5s2rX
+线上数据库
+################### online ###############
+jdbc.url=jdbc:mysql://10.10.10.2:3306/app_online_30?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=true&verifyServerCertificate=false
+jdbc.username=user_select
+jdbc.password=uom94cY8A9H5s2rX
+
+预发布环境20.119   开发查询账号 user_select   uom94cY8A9H5s2rX
+10.10.20.119
+预发布数据库
+
+
+
+
+
+1.自动生成代码工具
+    http://192.168.1.239:9080/king-mysql/ 
+    dev
+    dev1234
+
+	http://192.168.1.239:9080/king-mysql/ 
+	xiaoxc xynet123#
+
+
+ 
+    Hi, 高俊
+        欢迎使用三度空间堡垒机系统！
+堡垒机登录地址：http://10.10.20.89:8000
+        您的用户名： gaojun admin123
+        您的权限： 普通用户
+        您的web登录密码： admin123
+        您的ssh密钥文件密码：acI6mQHcH7zQHNIS
+密钥下载地址：http://10.10.20.89:8000/juser/key/down/?uuid=1db5fb0431544e1980b36ad16c263f4d
+        说明：请登录堡垒机后台下载密钥，然后使用密钥登录堡垒机！
+
+
+
+1、集成环境渲染机ip:192.168.1.233 
+机器用户名密码信息变更如下：
+user：sandu
+passwd：!mNnqSN#F8$VNBdn
+
+
+#online redis
+redislogin.sanduspace.com --> 10.10.20.228   33436  用途：登录
+redis.sanduspace.com  --> 10.10.20.230  33434   用途：存放数据
+redises.sanduspace.com --> 10.10.20.229 33434  用途：fullsearch数据
+
